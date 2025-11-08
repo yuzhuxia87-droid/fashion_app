@@ -39,7 +39,7 @@ async function getInitialData() {
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json() as { recommendations: OutfitWithStats[] };
       recommendations = data.recommendations || [];
     }
   } catch (error) {

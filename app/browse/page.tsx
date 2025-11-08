@@ -17,7 +17,7 @@ async function getBrowseData() {
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json() as { images: SearchImage[] };
       images = data.images || [];
     }
   } catch (error) {
