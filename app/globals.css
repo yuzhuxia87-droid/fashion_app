@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  /* Soft, Professional Color Palette */
+  --background: 0 0% 98%; /* #FAFAFA warm white */
+  --foreground: 0 0% 29%; /* #4A4A4A dark gray */
 
-  /* shadcn/ui カラーパレット - Modern Neutral (2025) */
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
+  --card: 0 0% 100%; /* White */
+  --card-foreground: 0 0% 29%; /* #4A4A4A */
 
   --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
+  --popover-foreground: 0 0% 29%;
 
-  --primary: 240 5.9% 10%; /* ダークグレー/ほぼ黒 - モダンでシャープ */
-  --primary-foreground: 0 0% 98%;
+  --primary: 349 47% 82%; /* #E8B4B8 soft pink */
+  --primary-foreground: 0 0% 100%; /* White text on primary */
 
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
+  --secondary: 112 22% 70%; /* #A8C4A2 sage green */
+  --secondary-foreground: 0 0% 29%;
 
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
+  --muted: 0 0% 96%; /* #F5F5F5 light gray */
+  --muted-foreground: 0 0% 42%; /* #6B6B6B charcoal gray */
 
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
+  --accent: 210 29% 81%; /* #B8C8D4 soft blue */
+  --accent-foreground: 0 0% 29%;
 
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 349 47% 82%; /* Using soft pink for softer destructive */
+  --destructive-foreground: 0 0% 29%;
 
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
+  --border: 0 0% 78%; /* #C8C8C8 medium gray */
+  --input: 0 0% 78%;
+  --ring: 349 47% 82%;
 
-  --radius: 0.5rem; /* よりシャープに */
+  --radius: 0.75rem; /* 12px - soft rounded corners */
 }
 
 @theme inline {

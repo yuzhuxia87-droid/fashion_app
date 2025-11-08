@@ -43,7 +43,7 @@ export default function PageHeader({
   };
 
   return (
-    <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-40">
+    <header className="bg-card shadow-sm sticky top-0 z-40 border-b border-border/20">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -53,8 +53,8 @@ export default function PageHeader({
               </Button>
             )}
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-              {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
+              <h1 className="text-lg font-bold tracking-wide uppercase">{title}</h1>
+              {subtitle && <p className="text-xs text-muted-foreground mt-1 tracking-wide">{subtitle}</p>}
             </div>
           </div>
 
