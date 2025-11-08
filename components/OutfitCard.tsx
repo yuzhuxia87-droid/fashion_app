@@ -42,7 +42,7 @@ export default function OutfitCard({
 
   return (
     <Card
-      className="group cursor-pointer overflow-hidden border-border hover:border-foreground/20 transition-colors"
+      className="group cursor-pointer overflow-hidden hover:bg-accent/50 transition-colors"
       onClick={() => onClick?.(outfit)}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-muted">
@@ -89,7 +89,7 @@ export default function OutfitCard({
 
       {/* Stats below image */}
       {showStats && (
-        <div className="px-3 py-2 border-t border-border">
+        <div className="px-3 py-2 bg-muted/30">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Shirt className="w-3.5 h-3.5" />
