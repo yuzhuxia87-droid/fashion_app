@@ -309,7 +309,7 @@ export default function BrowsePage() {
                 <Badge
                   key={tag.label}
                   variant="outline"
-                  className="cursor-pointer hover:bg-purple-50 hover:border-purple-300"
+                  className="cursor-pointer hover:bg-accent hover:border-accent"
                   onClick={() => {
                     setSearchQuery(tag.query);
                     searchImages(tag.query);
@@ -352,7 +352,7 @@ export default function BrowsePage() {
                 <div ref={observerTarget} className="h-10">
                   {loadingMore && (
                     <div className="flex justify-center">
-                      <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+                      <Loader2 className="w-6 h-6 animate-spin text-foreground" />
                     </div>
                   )}
                 </div>

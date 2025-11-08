@@ -16,8 +16,8 @@ export default function LoadingSpinner({ size = 'md', message }: LoadingSpinnerP
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-12">
-      <Loader2 className={`${sizeClasses[size]} animate-spin text-purple-600`} />
-      {message && <p className="text-sm text-gray-600">{message}</p>}
+      <Loader2 className={`${sizeClasses[size]} animate-spin text-muted-foreground`} />
+      {message && <p className="text-sm text-muted-foreground">{message}</p>}
     </div>
   );
 }

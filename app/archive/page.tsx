@@ -162,7 +162,7 @@ export default function ArchivePage() {
 
                       {/* Wear count badge */}
                       {outfit.wear_count > 0 && (
-                        <Badge className="absolute top-2 left-2 bg-purple-600">
+                        <Badge className="absolute top-2 left-2 bg-foreground">
                           {outfit.wear_count}回着用
                         </Badge>
                       )}
