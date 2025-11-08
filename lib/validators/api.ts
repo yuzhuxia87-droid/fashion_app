@@ -11,6 +11,17 @@ import { z } from 'zod';
 // Outfits API Validators
 // ============================================================================
 
+const ClothingItemSchema = z.object({
+  id: z.string().uuid(),
+  outfit_id: z.string().uuid(),
+  category: z.enum(['top', 'bottom', 'outer', 'dress', 'shoes', 'accessory']),
+  color: z.string(),
+  item_type: z.string(),
+  has_item: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
 export const OutfitWithStatsSchema = z.object({
   id: z.string().uuid(),
   user_id: z.string().uuid(),
@@ -23,7 +34,7 @@ export const OutfitWithStatsSchema = z.object({
   updated_at: z.string(),
   wear_count: z.number().int().nonnegative(),
   last_worn: z.string().nullable(),
-  clothing_items: z.array(z.any()).optional(), // Can be refined if needed
+  clothing_items: z.array(ClothingItemSchema).optional(),
 });
 
 export const OutfitsResponseSchema = z.object({
