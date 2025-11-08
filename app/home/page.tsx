@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import HomeClient from './HomeClient';
 import { WeatherData } from '@/types';
 import { OutfitWithStats } from '@/types/api';
+import { RecommendationsResponseSchema } from '@/lib/validators/api';
 
 async function getInitialData() {
   const supabase = await createClient();
@@ -39,8 +40,14 @@ async function getInitialData() {
     });
 
     if (response.ok) {
-      const data = await response.json() as { recommendations: OutfitWithStats[] };
-      recommendations = data.recommendations || [];
+      const json = await response.json();
+      const result = RecommendationsResponseSchema.safeParse(json);
+
+      if (result.success) {
+        recommendations = result.data.recommendations;
+      } else {
+        console.error('Invalid API response schema:', result.error);
+      }
     }
   } catch (error) {
     console.error('Recommendations fetch error:', error);

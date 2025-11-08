@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import BrowseClient from './BrowseClient';
 import { SearchImage } from '@/types/external';
+import { DiscoverImagesResponseSchema } from '@/lib/validators/api';
 
 async function getBrowseData() {
   const supabase = await createClient();
@@ -17,8 +18,14 @@ async function getBrowseData() {
     });
 
     if (response.ok) {
-      const data = await response.json() as { images: SearchImage[] };
-      images = data.images || [];
+      const json = await response.json();
+      const result = DiscoverImagesResponseSchema.safeParse(json);
+
+      if (result.success) {
+        images = result.data.images;
+      } else {
+        console.error('Invalid API response schema:', result.error);
+      }
     }
   } catch (error) {
     console.error('Error loading discover images:', error);

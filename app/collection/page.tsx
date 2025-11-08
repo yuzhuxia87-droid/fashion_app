@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import CollectionClient from './CollectionClient';
 import { OutfitWithStats } from '@/types/api';
 import { FilterTab } from '@/types/extended';
+import { OutfitsResponseSchema } from '@/lib/validators/api';
 
 async function getCollectionData(filterParam: string | null) {
   const supabase = await createClient();
@@ -18,8 +19,14 @@ async function getCollectionData(filterParam: string | null) {
     });
 
     if (response.ok) {
-      const data = await response.json() as { outfits: OutfitWithStats[] };
-      outfits = data.outfits || [];
+      const json = await response.json();
+      const result = OutfitsResponseSchema.safeParse(json);
+
+      if (result.success) {
+        outfits = result.data.outfits;
+      } else {
+        console.error('Invalid API response schema:', result.error);
+      }
     }
   } catch (error) {
     console.error('Error loading outfits:', error);
@@ -34,11 +41,10 @@ async function getCollectionData(filterParam: string | null) {
   };
 }
 
-export default async function CollectionPage({
-  searchParams,
-}: {
-  searchParams: { filter?: string };
+export default async function CollectionPage(props: {
+  searchParams: Promise<{ filter?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   const data = await getCollectionData(searchParams.filter || null);
 
   return <CollectionClient initialOutfits={data.outfits} initialFilter={data.initialFilter} />;

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import ArchiveClient from './ArchiveClient';
 import { OutfitWithStats } from '@/types/api';
+import { OutfitsResponseSchema } from '@/lib/validators/api';
 
 async function getArchiveData() {
   const supabase = await createClient();
@@ -17,8 +18,14 @@ async function getArchiveData() {
     });
 
     if (response.ok) {
-      const data = await response.json() as { outfits: OutfitWithStats[] };
-      outfits = data.outfits || [];
+      const json = await response.json();
+      const result = OutfitsResponseSchema.safeParse(json);
+
+      if (result.success) {
+        outfits = result.data.outfits;
+      } else {
+        console.error('Invalid API response schema:', result.error);
+      }
     }
   } catch (error) {
     console.error('Error loading archived outfits:', error);
