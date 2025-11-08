@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { Home, Shirt, Search, Archive } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface NavItem {
   id: string;
@@ -55,12 +56,13 @@ export default function BottomNav() {
             const active = isActive(item.path);
 
             return (
-              <button
+              <Button
                 key={item.id}
+                variant="ghost"
                 onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center justify-center gap-1 py-2 px-4 rounded-xl transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 h-auto py-2 px-4 rounded-xl transition-all ${
                   active
-                    ? 'text-purple-600'
+                    ? 'text-purple-600 hover:text-purple-600 hover:bg-purple-50'
                     : 'text-gray-500 hover:text-purple-500 hover:bg-purple-50'
                 }`}
               >
@@ -75,7 +77,7 @@ export default function BottomNav() {
                 }`}>
                   {item.label}
                 </span>
-              </button>
+              </Button>
             );
           })}
         </div>
