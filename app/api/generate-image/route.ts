@@ -30,16 +30,18 @@ suitable for a fashion coordinate app. The outfit should be clearly visible and 
       quality: 'standard',
     });
 
-    const imageUrl = response.data[0]?.url;
+    const imageData = response.data?.[0];
 
-    if (!imageUrl) {
+    if (!imageData?.url) {
       throw new Error('Failed to generate image');
     }
+
+    const imageUrl = imageData.url;
 
     return NextResponse.json({
       success: true,
       imageUrl,
-      revisedPrompt: response.data[0]?.revised_prompt,
+      revisedPrompt: imageData.revised_prompt,
     });
   } catch (error: any) {
     console.error('Error generating image:', error);

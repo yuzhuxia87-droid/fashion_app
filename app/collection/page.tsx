@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -18,7 +18,7 @@ import DeleteConfirmDialog from '@/components/DeleteConfirmDialog';
 import { FilterTab } from '@/types/extended';
 import { OutfitWithStats } from '@/types/api';
 
-export default function CollectionPage() {
+function CollectionPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [outfits, setOutfits] = useState<OutfitWithStats[]>([]);
@@ -239,5 +239,21 @@ export default function CollectionPage() {
         onConfirm={confirmDelete}
       />
     </div>
+  );
+}
+
+export default function CollectionPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <PageHeader title="マイコレクション" showLogout />
+        <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
+          <LoadingSpinner message="読み込み中..." />
+        </main>
+        <BottomNav />
+      </div>
+    }>
+      <CollectionPageContent />
+    </Suspense>
   );
 }
