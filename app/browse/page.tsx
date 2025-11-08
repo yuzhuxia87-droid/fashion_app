@@ -266,7 +266,7 @@ export default function BrowsePage() {
 
   if (loading && images.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <PageHeader title="コーデを探す" showLogout />
         <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
           <LoadingSpinner message="読み込み中..." />
@@ -277,7 +277,7 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <PageHeader
         title="コーデを探す"
         showLogout

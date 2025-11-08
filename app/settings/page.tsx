@@ -93,7 +93,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <PageHeader title="設定" showLogout />
         <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
           <LoadingSpinner message="読み込み中..." />
@@ -104,7 +104,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <PageHeader title="設定" showLogout />
 
       <main className="max-w-3xl mx-auto px-4 py-6 pb-20 space-y-6">

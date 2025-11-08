@@ -48,8 +48,8 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-100 safe-area-inset-bottom z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border safe-area-inset-bottom z-50">
+      <div className="max-w-7xl mx-auto px-2">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -60,20 +60,18 @@ export default function BottomNav() {
                 key={item.id}
                 variant="ghost"
                 onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center justify-center gap-1 h-auto py-2 px-4 rounded-xl transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 h-auto py-2 px-3 ${
                   active
-                    ? 'text-purple-600 hover:text-purple-600 hover:bg-purple-50'
-                    : 'text-gray-500 hover:text-purple-500 hover:bg-purple-50'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
                 }`}
               >
                 <Icon
-                  className={`w-6 h-6 transition-transform ${
-                    active ? 'scale-110' : ''
-                  }`}
-                  strokeWidth={active ? 2.5 : 2}
+                  className="w-5 h-5"
+                  strokeWidth={active ? 2 : 1.5}
                 />
-                <span className={`text-xs font-medium ${
-                  active ? 'font-semibold' : ''
+                <span className={`text-[11px] ${
+                  active ? 'font-medium' : ''
                 }`}>
                   {item.label}
                 </span>

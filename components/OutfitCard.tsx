@@ -42,72 +42,70 @@ export default function OutfitCard({
 
   return (
     <Card
-      className="group cursor-pointer overflow-hidden"
+      className="group cursor-pointer overflow-hidden border-border hover:border-foreground/20 transition-colors"
       onClick={() => onClick?.(outfit)}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+      <div className="relative aspect-[3/4] overflow-hidden bg-muted">
         <Image
           src={outfit.image_url}
           alt="Outfit"
           fill
-          className="object-cover transition-transform group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 768px) 50vw, 33vw"
         />
 
         {/* Favorite button */}
         {onFavoriteToggle && (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
-            className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm hover:bg-white"
+            className="absolute top-3 right-3"
             onClick={handleFavoriteClick}
           >
             <Star
-              className={`w-5 h-5 ${
+              className={`w-4 h-4 ${
                 outfit.is_favorite
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'text-gray-600'
+                  ? 'fill-foreground text-foreground'
+                  : 'text-muted-foreground'
               }`}
             />
           </Button>
         )}
 
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {outfit.season && (
-            <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm">
+            <Badge variant="secondary" className="text-xs">
               {outfit.season}
             </Badge>
           )}
           {outfit.style && (
-            <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm">
+            <Badge variant="secondary" className="text-xs">
               {outfit.style}
             </Badge>
           )}
         </div>
-
-        {/* Stats overlay */}
-        {showStats && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <Shirt className="w-4 h-4" />
-                  {outfit.wear_count || 0}回
-                </span>
-                {outfit.last_worn && (
-                  <span className="text-xs opacity-80">
-                    {new Date(outfit.last_worn).toLocaleDateString('ja-JP', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Stats below image */}
+      {showStats && (
+        <div className="px-3 py-2 border-t border-border">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Shirt className="w-3.5 h-3.5" />
+              {outfit.wear_count || 0}回
+            </span>
+            {outfit.last_worn && (
+              <span>
+                {new Date(outfit.last_worn).toLocaleDateString('ja-JP', {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Actions */}
       {(onArchive || onDelete) && (

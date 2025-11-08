@@ -43,7 +43,7 @@ export default function PageHeader({
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-lg border-b border-gray-100 sticky top-0 z-40">
+    <header className="bg-background border-b border-border sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -53,21 +53,21 @@ export default function PageHeader({
               </Button>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-              {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+              <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+              {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {action && (
-              <Button onClick={action.onClick}>
+              <Button onClick={action.onClick} size="sm">
                 {action.icon && <action.icon className="w-4 h-4 mr-2" />}
                 {action.label}
               </Button>
             )}
             {showLogout && (
               <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
               </Button>
             )}
           </div>

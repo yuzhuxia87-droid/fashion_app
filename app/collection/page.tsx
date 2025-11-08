@@ -157,7 +157,7 @@ function CollectionPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <PageHeader title="マイコレクション" showLogout />
         <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
           <LoadingSpinner message="読み込み中..." />
@@ -170,7 +170,7 @@ function CollectionPageContent() {
   const filteredOutfits = getFilteredOutfits(activeFilter);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <PageHeader
         title="マイコレクション"
         subtitle={`${outfits.length}件のコーディネート`}
@@ -245,7 +245,7 @@ function CollectionPageContent() {
 export default function CollectionPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <PageHeader title="マイコレクション" showLogout />
         <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
           <LoadingSpinner message="読み込み中..." />

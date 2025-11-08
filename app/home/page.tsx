@@ -182,7 +182,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <PageHeader title="今日のコーデ" showLogout />
         <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
           <LoadingSpinner message="読み込み中..." />
@@ -193,7 +193,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <PageHeader
         title="今日のコーデ"
         subtitle={new Date().toLocaleDateString('ja-JP', {

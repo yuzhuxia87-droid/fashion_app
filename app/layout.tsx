@@ -40,7 +40,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-gray-50 min-h-screen`}
+        className={`${inter.variable} font-sans antialiased bg-background min-h-screen`}
       >
         {children}
         <Toaster position="bottom-center" />
