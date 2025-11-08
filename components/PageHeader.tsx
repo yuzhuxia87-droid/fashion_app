@@ -33,7 +33,7 @@ export default function PageHeader({
       await supabase.auth.signOut();
       toast.success('ログアウトしました');
       router.push('/login');
-    } catch (error) {
+    } catch {
       toast.error('ログアウトに失敗しました');
     }
   };
@@ -43,32 +43,38 @@ export default function PageHeader({
   };
 
   return (
-    <header className="bg-card shadow-sm sticky top-0 z-40 border-b border-border/20">
-      <div className="max-w-7xl mx-auto px-4 py-4">
+    <header className="bg-white shadow-sm sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-5 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {showBack && (
-              <Button variant="ghost" size="icon" onClick={handleBack}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
+              <button
+                className="p-2 rounded-full hover:bg-[#E8E5FF] transition-colors"
+                onClick={handleBack}
+              >
+                <ArrowLeft className="w-5 h-5 text-[#374151]" />
+              </button>
             )}
             <div>
-              <h1 className="text-lg font-bold tracking-wide uppercase">{title}</h1>
-              {subtitle && <p className="text-xs text-muted-foreground mt-1 tracking-wide">{subtitle}</p>}
+              <h1 className="text-lg font-bold text-[#111827]">{title}</h1>
+              {subtitle && <p className="text-xs text-[#6B7280] mt-1">{subtitle}</p>}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {action && (
               <Button onClick={action.onClick} size="sm">
-                {action.icon && <action.icon className="w-4 h-4 mr-2" />}
+                {action.icon && <action.icon className="w-4 h-4 mr-1.5" />}
                 {action.label}
               </Button>
             )}
             {showLogout && (
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-4 h-4" />
-              </Button>
+              <button
+                className="p-2 rounded-full hover:bg-[#E8E5FF] transition-colors"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 text-[#374151]" />
+              </button>
             )}
           </div>
         </div>

@@ -1,41 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  /* Soft, Professional Color Palette */
-  --background: 0 0% 98%; /* #FAFAFA warm white */
-  --foreground: 0 0% 29%; /* #4A4A4A dark gray */
+  /* Monochrome + Purple Accent (Notion/Linear/Tailwind UI inspired) */
+  --background: 0 0% 100%; /* #FFFFFF pure white */
+  --foreground: 220 13% 9%; /* #111827 almost black - primary text */
 
   --card: 0 0% 100%; /* White */
-  --card-foreground: 0 0% 29%; /* #4A4A4A */
+  --card-foreground: 220 13% 9%; /* #111827 */
 
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 29%;
+  --popover-foreground: 220 13% 9%;
 
-  --primary: 349 47% 82%; /* #E8B4B8 soft pink */
+  /* Primary: Pink accent (洗練された楽しさ) */
+  --primary: 330 81% 60%; /* #EC4899 rose pink - main brand color */
   --primary-foreground: 0 0% 100%; /* White text on primary */
+  --primary-light: 322 87% 96%; /* #FCE7F3 light pink - for hover/focus */
 
-  --secondary: 112 22% 70%; /* #A8C4A2 sage green */
-  --secondary-foreground: 0 0% 29%;
+  /* Secondary: Purple accent (サブカラー) */
+  --secondary-accent: 244 63% 95%; /* #E8E5FF light purple - kept as sub-color */
 
-  --muted: 0 0% 96%; /* #F5F5F5 light gray */
-  --muted-foreground: 0 0% 42%; /* #6B6B6B charcoal gray */
+  /* Secondary: Monochrome grays */
+  --secondary: 220 14% 96%; /* #F3F4F6 very light gray */
+  --secondary-foreground: 220 13% 9%; /* #111827 dark text */
 
-  --accent: 210 29% 81%; /* #B8C8D4 soft blue */
-  --accent-foreground: 0 0% 29%;
+  --muted: 220 14% 96%; /* #F3F4F6 very light gray */
+  --muted-foreground: 220 9% 46%; /* #6B7280 medium gray - for less important text */
 
-  --destructive: 349 47% 82%; /* Using soft pink for softer destructive */
-  --destructive-foreground: 0 0% 29%;
+  --accent: 220 13% 9%; /* #111827 dark gray - monochrome focus */
+  --accent-foreground: 0 0% 100%;
 
-  --border: 0 0% 78%; /* #C8C8C8 medium gray */
-  --input: 0 0% 78%;
-  --ring: 349 47% 82%;
+  --destructive: 0 84% 60%; /* #EF4444 red */
+  --destructive-foreground: 0 0% 100%;
 
-  --radius: 0.75rem; /* 12px - soft rounded corners */
+  --border: 220 13% 91%; /* #E5E7EB light gray */
+  --input: 220 13% 91%;
+  --ring: 239 84% 67%; /* #6366F1 purple ring */
+
+  --surface: 0 0% 100%; /* Material Design 3: Surface color (white) */
+
+  --radius: 9999px; /* Full rounded (pill-shaped) */
 }
 
 @theme inline {
+  /* Color utilities */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--primary-light);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Border radius */
+  --radius: var(--radius);
+  --radius-lg: 1rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+
+  /* Fonts */
   --font-sans: var(--font-sans);
 }
 
