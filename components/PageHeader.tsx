@@ -71,7 +71,9 @@ export default function PageHeader({
             )}
             <div>
               <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-foreground">{title}</h1>
-              {subtitle && <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">{subtitle}</p>}
+              <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">
+                {subtitle || '\u00A0'}
+              </p>
             </div>
           </div>
 
