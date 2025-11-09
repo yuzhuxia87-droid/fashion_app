@@ -66,6 +66,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showAllTags, setShowAllTags] = useState(false);
+  const expandedTagsRef = useRef<HTMLDivElement>(null);
 
   // Generate tab states
   const [generateDescription, setGenerateDescription] = useState('');
@@ -86,6 +87,19 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
   // Infinite scroll observer
   const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll when tags expand
+  useEffect(() => {
+    if (showAllTags && expandedTagsRef.current) {
+      // Wait for animation to start, then scroll
+      setTimeout(() => {
+        expandedTagsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }, 100);
+    }
+  }, [showAllTags]);
 
   const searchImages = async (query: string, fromTag: boolean = false) => {
     if (!query.trim()) return;
@@ -309,9 +323,9 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                 ))}
 
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="h-8 text-xs md:text-sm gap-1 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                  className="h-8 text-xs md:text-sm gap-1"
                   onClick={() => setShowAllTags(!showAllTags)}
                   aria-expanded={showAllTags}
                   aria-controls="category-tags-expanded"
@@ -328,6 +342,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
               {/* Expanded Tags (slide down) */}
               <div
+                ref={expandedTagsRef}
                 id="category-tags-expanded"
                 className="grid transition-all duration-300 ease-out"
                 style={{
