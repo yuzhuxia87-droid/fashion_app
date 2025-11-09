@@ -37,45 +37,30 @@ export default function HomeClient({ initialData }: HomeClientProps) {
   const [loadingMore, setLoadingMore] = useState(false);
   const alternativesRef = useRef<HTMLDivElement>(null);
 
-  // Debug: コンポーネント全体の状態を確認
-  console.log('[DEBUG] Component render - alternativeOutfits count:', alternativeOutfits.length);
-  console.log('[DEBUG] Component render - showAlternatives:', showAlternatives);
-  console.log('[DEBUG] Component render - initialData.recommendations:', initialData.recommendations.length);
 
   // Auto-scroll when alternatives are shown (mobile-optimized)
   useEffect(() => {
-    console.log('[DEBUG] useEffect triggered - showAlternatives:', showAlternatives);
-    console.log('[DEBUG] useEffect triggered - alternativesRef.current:', alternativesRef.current);
-
     if (showAlternatives && alternativesRef.current) {
-      console.log('[DEBUG] Starting scroll animation...');
-      // モバイル対応：requestAnimationFrameを使用してレンダリング完了を待つ
+      // モバイル対応：複数のrequestAnimationFrameでレンダリング完了を確実に待つ
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          if (alternativesRef.current) {
-            const element = alternativesRef.current;
-            const rect = element.getBoundingClientRect();
-            const headerHeight = 80; // PageHeaderの高さを考慮
+          requestAnimationFrame(() => {
+            if (alternativesRef.current) {
+              const element = alternativesRef.current;
+              const rect = element.getBoundingClientRect();
+              const headerHeight = 100; // PageHeaderの高さ + マージン
 
-            console.log('[DEBUG] Scroll calculation:', {
-              'rect.top': rect.top,
-              'window.pageYOffset': window.pageYOffset,
-              'headerHeight': headerHeight,
-              'scrollTo': window.pageYOffset + rect.top - headerHeight
-            });
+              const scrollTarget = window.scrollY + rect.top - headerHeight;
 
-            // window.scrollToを使用（モバイルでより確実）
-            window.scrollTo({
-              top: window.pageYOffset + rect.top - headerHeight,
-              behavior: 'smooth'
-            });
-
-            console.log('[DEBUG] Scrolled to alternatives section');
-          }
+              // window.scrollToを使用（モバイルでより確実）
+              window.scrollTo({
+                top: scrollTarget,
+                behavior: 'smooth'
+              });
+            }
+          });
         });
       });
-    } else {
-      console.log('[DEBUG] Scroll condition not met');
     }
   }, [showAlternatives]);
 
@@ -176,11 +161,7 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => {
-                    console.log('[DEBUG] Button clicked - current showAlternatives:', showAlternatives);
-                    console.log('[DEBUG] Button clicked - alternativeOutfits count:', alternativeOutfits.length);
-                    setShowAlternatives(!showAlternatives);
-                  }}
+                  onClick={() => setShowAlternatives(!showAlternatives)}
                 >
                   <RefreshCw className="mr-2" />
                   他の提案を見る
@@ -201,14 +182,6 @@ export default function HomeClient({ initialData }: HomeClientProps) {
         )}
 
         {/* Alternative Outfits */}
-        {(() => {
-          console.log('[DEBUG] Rendering condition check:', {
-            showAlternatives,
-            'alternativeOutfits.length': alternativeOutfits.length,
-            'condition met': showAlternatives && alternativeOutfits.length > 0
-          });
-          return null;
-        })()}
         {showAlternatives && alternativeOutfits.length > 0 && (
           <div ref={alternativesRef}>
             <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
@@ -236,13 +209,6 @@ export default function HomeClient({ initialData }: HomeClientProps) {
               </CardContent>
             </Card>
 
-            {(() => {
-              console.log('[DEBUG] "さらに見る" button condition check:', {
-                'alternativeOutfits.length': alternativeOutfits.length,
-                'condition met (>=3)': alternativeOutfits.length >= 3
-              });
-              return null;
-            })()}
             {alternativeOutfits.length >= 3 && (
               <Button
                 variant="outline"
