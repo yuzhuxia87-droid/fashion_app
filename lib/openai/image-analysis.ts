@@ -1,8 +1,23 @@
 import OpenAI from 'openai';
-import { AIAnalysisResult, DetectedItem, Season } from '@/types';
+import { z } from 'zod';
+import { AIAnalysisResult, DetectedItem } from '@/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Zod schema for runtime validation
+const DetectedItemSchema = z.object({
+  category: z.enum(['top', 'bottom', 'outer', 'dress', 'shoes', 'accessory']),
+  color: z.string().min(1, '色は必須です'),
+  item_type: z.string().min(1, 'アイテムタイプは必須です'),
+  confidence: z.number().min(0).max(1),
+});
+
+const AIAnalysisResultSchema = z.object({
+  items: z.array(DetectedItemSchema).min(1, '最低1つのアイテムが必要です'),
+  season: z.enum(['spring', 'summer', 'fall', 'winter', 'all']).optional(),
+  style: z.string().optional(),
 });
 
 export async function analyzeOutfitImage(
@@ -60,9 +75,29 @@ export async function analyzeOutfitImage(
     const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
     const jsonString = jsonMatch ? jsonMatch[1] : content;
 
-    const result = JSON.parse(jsonString) as AIAnalysisResult;
+    // Parse JSON
+    let parsedData: unknown;
+    try {
+      parsedData = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      throw new Error('OpenAIのレスポンスをパースできませんでした');
+    }
 
-    return result;
+    // Validate with Zod schema
+    const validationResult = AIAnalysisResultSchema.safeParse(parsedData);
+
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error.format());
+      throw new Error('OpenAIのレスポンスが期待される形式ではありません');
+    }
+
+    // Ensure required fields have default values
+    return {
+      items: validationResult.data.items,
+      season: validationResult.data.season || 'all',
+      style: validationResult.data.style || 'カジュアル',
+    };
   } catch (error) {
     console.error('Error analyzing outfit image:', error);
     throw new Error('画像の解析に失敗しました');

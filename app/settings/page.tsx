@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { getAvailableCities } from '@/lib/weather/api';
@@ -30,11 +30,7 @@ export default function SettingsPage() {
 
   const cities = getAvailableCities();
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const supabase = createClient();
 
@@ -63,7 +59,11 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const saveSettings = async () => {
     setSaving(true);
@@ -95,7 +95,7 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen bg-background">
         <PageHeader title="設定" showLogout />
-        <main className="max-w-7xl mx-auto px-4 py-6 pb-20">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24">
           <LoadingSpinner message="読み込み中..." />
         </main>
         <BottomNav />
@@ -107,42 +107,42 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <PageHeader title="設定" showLogout />
 
-      <main className="max-w-3xl mx-auto px-4 py-6 pb-20 space-y-6">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 space-y-6 md:space-y-8">
         {/* Account Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>アカウント</CardTitle>
-            <CardDescription>ログイン情報</CardDescription>
+        <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+          <CardHeader className="p-5 md:p-6">
+            <CardTitle className="text-lg md:text-xl">アカウント</CardTitle>
+            <CardDescription className="text-sm md:text-base">ログイン情報</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-5 md:p-6 pt-0">
             <div className="space-y-2">
-              <Label>メールアドレス</Label>
-              <div className="text-sm text-gray-600">{userEmail}</div>
+              <Label className="text-sm md:text-base">メールアドレス</Label>
+              <div className="text-sm md:text-base text-gray-600">{userEmail}</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Location Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+          <CardHeader className="p-5 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
               <MapPin className="w-5 h-5" />
               位置情報
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm md:text-base">
               天気に合わせたコーディネート提案のための設定
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 md:space-y-5 p-5 md:p-6 pt-0">
             <div className="space-y-2">
-              <Label htmlFor="city-select">都市</Label>
+              <Label htmlFor="city-select" className="text-sm md:text-base">都市</Label>
               <Select value={selectedCity} onValueChange={setSelectedCity}>
-                <SelectTrigger id="city-select">
+                <SelectTrigger id="city-select" className="h-10 md:h-11 text-sm md:text-base">
                   <SelectValue placeholder="都市を選択" />
                 </SelectTrigger>
                 <SelectContent>
                   {cities.map((city) => (
-                    <SelectItem key={city} value={city}>
+                    <SelectItem key={city} value={city} className="text-sm md:text-base">
                       {city}
                     </SelectItem>
                   ))}
@@ -151,21 +151,21 @@ export default function SettingsPage() {
             </div>
 
             <Button onClick={saveSettings} disabled={saving} className="w-full">
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="mr-2" />
               {saving ? '保存中...' : '設定を保存'}
             </Button>
           </CardContent>
         </Card>
 
         {/* App Info Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+          <CardHeader className="p-5 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
               <Info className="w-5 h-5" />
               アプリ情報
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-600">
+          <CardContent className="space-y-2 text-sm md:text-base text-gray-600 p-5 md:p-6 pt-0">
             <div className="flex justify-between">
               <span>バージョン</span>
               <span>1.0.0</span>

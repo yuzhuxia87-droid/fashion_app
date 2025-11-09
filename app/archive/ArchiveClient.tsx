@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Shirt, ShoppingBag, RotateCcw } from 'lucide-react';
+import { Search, Shirt, ShoppingBag, RotateCcw, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -23,12 +23,18 @@ interface ArchiveClientProps {
   initialOutfits: OutfitWithStats[];
 }
 
+// Validation function for ArchiveTab
+function isArchiveTab(value: string): value is ArchiveTab {
+  return value === 'retired' || value === 'wishlist';
+}
+
 export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
   const router = useRouter();
   const [outfits, setOutfits] = useState<OutfitWithStats[]>(initialOutfits);
   const [activeTab, setActiveTab] = useState<ArchiveTab>('retired');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [outfitToDelete, setOutfitToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUnarchive = async (id: string) => {
     try {
@@ -56,6 +62,7 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
   const confirmDelete = async () => {
     if (!outfitToDelete) return;
 
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/outfits/${outfitToDelete}`, {
         method: 'DELETE',
@@ -69,6 +76,7 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
       console.error('Delete error:', error);
       toast.error('削除に失敗しました');
     } finally {
+      setIsDeleting(false);
       setDeleteDialogOpen(false);
       setOutfitToDelete(null);
     }
@@ -80,20 +88,22 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
   const wishlistOutfits: OutfitWithStats[] = [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200/75 via-pink-200/60 to-purple-100/70">
       <PageHeader
         title="アーカイブ"
         subtitle={`${outfits.length}件のアイテム`}
         showLogout
-        action={{
-          label: 'コーデを探す',
-          onClick: () => router.push('/browse'),
-          icon: Search,
-        }}
       />
 
       <main className="max-w-7xl mx-auto px-5 py-6 pb-24">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ArchiveTab)}>
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => {
+            if (isArchiveTab(v)) {
+              setActiveTab(v);
+            }
+          }}
+        >
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="retired">
               <Shirt className="w-4 h-4 mr-2" />
@@ -109,8 +119,8 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
             {retiredOutfits.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {retiredOutfits.map((outfit) => (
-                  <Card key={outfit.id} className="group overflow-hidden">
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                  <Card key={outfit.id} className="group overflow-hidden rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50/30">
                       <Image
                         src={outfit.image_url}
                         alt="Archived outfit"
@@ -121,28 +131,28 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
 
                       {/* Wear count badge */}
                       {outfit.wear_count > 0 && (
-                        <Badge className="absolute top-2 left-2 bg-foreground">
+                        <Badge variant="outline" className="absolute top-3 left-3">
                           {outfit.wear_count}回着用
                         </Badge>
                       )}
                     </div>
 
-                    <CardContent className="p-3 flex gap-2">
+                    <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1"
+                        className="flex-1 h-8 px-2"
                         onClick={() => handleUnarchive(outfit.id)}
                       >
-                        <RotateCcw className="w-4 h-4 mr-1" />
-                        戻す
+                        <RotateCcw className="w-3.5 h-3.5" />
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="sm"
+                        className="flex-1 h-8 px-2 text-gray-600 hover:text-red-600 hover:bg-red-50"
                         onClick={() => handleDelete(outfit.id)}
                       >
-                        削除
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </CardContent>
                   </Card>
@@ -161,8 +171,8 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
             {wishlistOutfits.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {wishlistOutfits.map((outfit) => (
-                  <Card key={outfit.id} className="group overflow-hidden">
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                  <Card key={outfit.id} className="group overflow-hidden rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50/30">
                       <Image
                         src={outfit.image_url}
                         alt="Wishlist item"
@@ -172,22 +182,22 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
                       />
                     </div>
 
-                    <CardContent className="p-3 flex gap-2">
+                    <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1"
+                        className="flex-1 h-8 px-2"
                         onClick={() => handleUnarchive(outfit.id)}
                       >
-                        <RotateCcw className="w-4 h-4 mr-1" />
-                        コレクションへ
+                        <RotateCcw className="w-3.5 h-3.5" />
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="sm"
+                        className="flex-1 h-8 px-2 text-gray-600 hover:text-red-600 hover:bg-red-50"
                         onClick={() => handleDelete(outfit.id)}
                       >
-                        削除
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </CardContent>
                   </Card>
@@ -214,6 +224,7 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

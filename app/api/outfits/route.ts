@@ -11,7 +11,10 @@ export async function GET(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
+    console.log('[API /outfits GET] Auth check - User:', user?.id, 'Error:', authError?.message);
+
     if (authError || !user) {
+      console.error('[API /outfits GET] Unauthorized access attempt');
       return NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
@@ -55,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Aggregate wear history data
-    const wearStats = (wearHistory || []).reduce((acc: any, record: any) => {
+    const wearStats = (wearHistory || []).reduce((acc: Record<string, { count: number; lastWorn: string | null }>, record: { outfit_id: string; worn_date: string }) => {
       if (!acc[record.outfit_id]) {
         acc[record.outfit_id] = {
           count: 0,
@@ -63,14 +66,15 @@ export async function GET(request: NextRequest) {
         };
       }
       acc[record.outfit_id].count++;
-      if (!acc[record.outfit_id].lastWorn || record.worn_date > acc[record.outfit_id].lastWorn) {
+      const currentLastWorn = acc[record.outfit_id].lastWorn;
+      if (!currentLastWorn || record.worn_date > currentLastWorn) {
         acc[record.outfit_id].lastWorn = record.worn_date;
       }
       return acc;
     }, {});
 
     // Merge wear stats with outfits
-    const outfitsWithStats = (outfits || []).map((outfit: any) => ({
+    const outfitsWithStats = (outfits || []).map((outfit: { id: string; [key: string]: unknown }) => ({
       ...outfit,
       wear_count: wearStats[outfit.id]?.count || 0,
       last_worn: wearStats[outfit.id]?.lastWorn || null,
@@ -140,7 +144,7 @@ export async function POST(request: NextRequest) {
 
     // Create clothing items
     if (items && items.length > 0) {
-      const clothingItems = items.map((item: any) => ({
+      const clothingItems = items.map((item: { category: string; color?: string; item_type: string; has_item?: boolean }) => ({
         outfit_id: outfit.id,
         category: item.category,
         color: item.color,

@@ -140,6 +140,8 @@ function mapJMAWeatherCode(code: string): WeatherCondition {
   return 'clouds';
 }
 
+// Utility function to map weather conditions (currently unused but kept for future use)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function mapWeatherCondition(condition: string): WeatherCondition {
   const lowerCondition = condition.toLowerCase();
 

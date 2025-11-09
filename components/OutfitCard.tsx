@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Star, Archive, Trash2, Shirt } from 'lucide-react';
 import { OutfitWithStats } from '@/types/api';
 import Image from 'next/image';
@@ -41,10 +40,10 @@ export default function OutfitCard({
 
   return (
     <Card
-      className="group cursor-pointer overflow-hidden hover:shadow-lg transition-all bg-white rounded-2xl border-0"
+      className="group cursor-pointer overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 rounded-2xl border-0"
       onClick={() => onClick?.(outfit)}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F5]">
+      <div className="relative aspect-[3/4] overflow-hidden bg-gray-50/30">
         <Image
           src={outfit.image_url}
           alt="Outfit"
@@ -56,38 +55,29 @@ export default function OutfitCard({
         {/* Favorite button */}
         {onFavoriteToggle && (
           <button
-            className="absolute top-3 right-3 bg-white/95 hover:bg-white rounded-full shadow-sm p-2 transition-all"
+            className={`absolute top-3 right-3 rounded-full shadow-lg p-2.5 transition-all hover:scale-110 active:scale-95 ${
+              outfit.is_favorite
+                ? 'bg-pink-400 hover:bg-pink-500'
+                : 'bg-white/90 backdrop-blur-md hover:bg-white'
+            }`}
             onClick={handleFavoriteClick}
           >
             <Star
-              className={`w-4 h-4 ${
+              className={`w-4 h-4 transition-all ${
                 outfit.is_favorite
-                  ? 'fill-[#EC4899] text-[#EC4899]'
-                  : 'text-[#6B7280]'
+                  ? 'fill-white text-white'
+                  : 'text-gray-700'
               }`}
+              strokeWidth={2}
             />
           </button>
         )}
-
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {outfit.season && (
-            <Badge>
-              {outfit.season}
-            </Badge>
-          )}
-          {outfit.style && (
-            <Badge variant="secondary">
-              {outfit.style}
-            </Badge>
-          )}
-        </div>
       </div>
 
       {/* Stats below image */}
       {showStats && (
-        <div className="px-4 py-3 bg-white">
-          <div className="flex items-center gap-3 text-xs text-[#374151]">
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-3 text-xs text-gray-700">
             <span className="flex items-center gap-1.5">
               <Shirt className="w-3.5 h-3.5" />
               {outfit.wear_count || 0}回
@@ -106,27 +96,25 @@ export default function OutfitCard({
 
       {/* Actions */}
       {(onArchive || onDelete) && (
-        <CardContent className="p-3 flex gap-2">
+        <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
           {onArchive && (
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
+              className="flex-1 h-8 px-2"
               onClick={handleArchiveClick}
             >
-              <Archive className="w-3.5 h-3.5 mr-1.5" />
-              アーカイブ
+              <Archive className="w-3.5 h-3.5" />
             </Button>
           )}
           {onDelete && (
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
-              className="flex-1"
+              className="flex-1 h-8 px-2"
               onClick={handleDeleteClick}
             >
-              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-              削除
+              <Trash2 className="w-3.5 h-3.5" />
             </Button>
           )}
         </CardContent>

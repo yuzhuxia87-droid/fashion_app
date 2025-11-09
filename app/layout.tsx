@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -17,13 +17,27 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "コーデアプリ",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: "cover",
-  },
+};
+
+/**
+ * Viewport Configuration
+ *
+ * ⚠️ 重要: この設定を変更する前に必ずSCROLL_FIX_DOCUMENTATION.mdを読むこと
+ *
+ * 絶対にやってはいけないこと:
+ * - userScalable: false を設定 → iOSでスクロール不可になる
+ * - maximumScale: 1 を設定 → アクセシビリティ違反 & iOS scroll問題
+ *
+ * この設定により:
+ * - ✅ iOSでスクロール可能
+ * - ✅ アクセシビリティ準拠（WCAG 2.1）
+ * - ✅ ピンチズーム可能（視覚障害者対応）
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,  // 5まで許可（アクセシビリティ対応）
+  viewportFit: "cover",
   themeColor: "#3b82f6",
 };
 

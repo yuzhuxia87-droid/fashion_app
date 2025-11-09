@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Search, Star, Clock } from 'lucide-react';
+import { Search, Star, Clock, Grid3x3 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import BottomNav from '@/components/BottomNav';
@@ -21,6 +21,11 @@ interface CollectionClientProps {
   initialFilter?: FilterTab;
 }
 
+// Validation function for FilterTab
+function isFilterTab(value: string): value is FilterTab {
+  return value === 'all' || value === 'favorites' || value === 'notWornRecently';
+}
+
 function CollectionContent({ initialOutfits, initialFilter = 'all' }: CollectionClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,6 +33,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
   const [activeFilter, setActiveFilter] = useState<FilterTab>(initialFilter);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [outfitToDelete, setOutfitToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleFavoriteToggle = async (id: string) => {
     const outfit = outfits.find((o) => o.id === id);
@@ -88,6 +94,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
   const confirmDelete = async () => {
     if (!outfitToDelete) return;
 
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/outfits/${outfitToDelete}`, {
         method: 'DELETE',
@@ -101,6 +108,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
       console.error('Delete error:', error);
       toast.error('削除に失敗しました');
     } finally {
+      setIsDeleting(false);
       setDeleteDialogOpen(false);
       setOutfitToDelete(null);
     }
@@ -124,35 +132,41 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
   const filteredOutfits = getFilteredOutfits(activeFilter);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200/75 via-pink-200/60 to-purple-100/70">
       <PageHeader
         title="マイコレクション"
         subtitle={`${outfits.length}件のコーディネート`}
         showLogout
-        action={{
-          label: 'コーデを探す',
-          onClick: () => router.push('/browse'),
-          icon: Search,
-        }}
       />
 
-      <main className="max-w-7xl mx-auto px-5 py-6 pb-24">
-        <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterTab)}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="all">すべて</TabsTrigger>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8">
+        <Tabs
+          value={activeFilter}
+          onValueChange={(v) => {
+            if (isFilterTab(v)) {
+              setActiveFilter(v);
+            }
+          }}
+        >
+          <TabsList className="grid w-full grid-cols-3 mb-6 md:mb-8">
+            <TabsTrigger value="all">
+              <Grid3x3 className="w-4 h-4 mr-1 md:mr-2" />
+              すべて
+            </TabsTrigger>
             <TabsTrigger value="favorites">
-              <Star className="w-4 h-4 mr-2" />
+              <Star className="w-4 h-4 mr-1 md:mr-2" />
               お気に入り
             </TabsTrigger>
             <TabsTrigger value="notWornRecently">
-              <Clock className="w-4 h-4 mr-2" />
-              最近未着用
+              <Clock className="w-4 h-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">最近未着用</span>
+              <span className="sm:hidden">未着用</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeFilter} className="mt-0">
             {filteredOutfits.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
                 {filteredOutfits.map((outfit) => (
                   <OutfitCard
                     key={outfit.id}
@@ -191,6 +205,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

@@ -6,19 +6,16 @@
  */
 
 import { Outfit, ClothingItem, ClothingCategory } from './index';
+import { OutfitWithStats } from './api';
 
 // ============================================================================
 // Extended Outfit Types
 // ============================================================================
 
 /**
- * Outfit with computed statistics (wear count and last worn date)
+ * NOTE: OutfitWithStats is now defined in types/api.ts
+ * Import from '@/types/api' instead
  */
-export interface OutfitWithStats extends Outfit {
-  wear_count: number;
-  last_worn: string | null;
-  clothing_items?: ClothingItem[];
-}
 
 /**
  * Outfit with related clothing items

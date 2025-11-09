@@ -63,6 +63,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
   // Search mode states
   const [searchQuery, setSearchQuery] = useState('');
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   // Generate tab states
   const [generateDescription, setGenerateDescription] = useState('');
@@ -84,7 +85,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
   // Infinite scroll observer
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  const searchImages = async (query: string) => {
+  const searchImages = async (query: string, fromTag: boolean = false) => {
     if (!query.trim()) return;
 
     try {
@@ -97,6 +98,11 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
       setImages(data.images || []);
       setHasMore(data.hasMore !== false);
       setSearchDialogOpen(false);
+
+      // フリーテキスト検索の場合はタグの選択状態をクリア
+      if (!fromTag) {
+        setActiveTag(null);
+      }
     } catch (error) {
       console.error('Error searching images:', error);
       toast.error('検索に失敗しました');
@@ -173,9 +179,11 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
       const data = await response.json();
       setAnalysisResult({
-        items: data.analysis.items.map((item: { name: string; category: string; color?: string; has_item: boolean }) => ({
-          ...item,
-          has_item: false,
+        items: data.analysis.items.map((item: { item_type: string; category: string; color: string; confidence: number }) => ({
+          category: item.category,
+          color: item.color,
+          item_type: item.item_type,
+          has_item: true,
         })),
         season: data.analysis.season,
         style: data.analysis.style,
@@ -217,6 +225,17 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
     }
   };
 
+  const toggleItemOwnership = (index: number) => {
+    if (!analysisResult) return;
+
+    setAnalysisResult({
+      ...analysisResult,
+      items: analysisResult.items.map((item, i) =>
+        i === index ? { ...item, has_item: !item.has_item } : item
+      ),
+    });
+  };
+
   // Infinite scroll setup
   useEffect(() => {
     if (loading || !observerTarget.current) return;
@@ -236,20 +255,15 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
   }, [loading, hasMore, loadingMore, loadMoreImages]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200/75 via-pink-200/60 to-purple-100/70">
       <PageHeader
         title="コーデを探す"
         showLogout
-        action={{
-          label: '検索',
-          onClick: () => setSearchDialogOpen(true),
-          icon: Search,
-        }}
       />
 
-      <main className="max-w-7xl mx-auto px-5 py-6 pb-24">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'discover' | 'generate')}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6 md:mb-8">
             <TabsTrigger value="discover">
               <Search className="w-4 h-4 mr-2" />
               発見
@@ -261,35 +275,47 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
           </TabsList>
 
           {/* Discover Tab */}
-          <TabsContent value="discover" className="mt-0 space-y-6">
+          <TabsContent value="discover" className="mt-0 space-y-6 md:space-y-8">
+            {/* Search Button */}
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setSearchDialogOpen(true)}
+            >
+              <Search className="w-4 h-4 mr-2" />
+              キーワードで検索
+            </Button>
+
             {/* Category Tags */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 md:gap-3">
               {CATEGORY_TAGS.map((tag) => (
-                <Badge
+                <Button
                   key={tag.label}
-                  variant="outline"
-                  className="cursor-pointer hover:bg-accent hover:border-accent"
+                  variant={activeTag === tag.label ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 text-xs md:text-sm"
                   onClick={() => {
+                    setActiveTag(tag.label);
                     setSearchQuery(tag.query);
-                    searchImages(tag.query);
+                    searchImages(tag.query, true);
                   }}
                 >
                   {tag.label}
-                </Badge>
+                </Button>
               ))}
             </div>
 
             {/* Image Grid */}
             {images.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
                   {images.map((image) => (
                     <Card
                       key={image.id}
-                      className="group cursor-pointer overflow-hidden"
+                      className="group cursor-pointer overflow-hidden shadow-md hover:shadow-xl hover:shadow-pink-100/30 transition-all duration-300"
                       onClick={() => handleAnalyzeImage(image.url)}
                     >
-                      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100/30">
                         <Image
                           src={image.thumb}
                           alt={image.description}
@@ -327,8 +353,8 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
           {/* Generate Tab */}
           <TabsContent value="generate" className="mt-0 space-y-6">
-            <Card>
-              <CardContent className="p-6 space-y-4">
+            <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+              <CardContent className="p-5 space-y-3.5">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">コーディネートの説明</label>
                   <Textarea
@@ -360,9 +386,9 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
             </Card>
 
             {generatedImage && (
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+              <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+                <CardContent className="p-5 space-y-3.5">
+                  <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100/30">
                     <Image
                       src={generatedImage}
                       alt="Generated outfit"
@@ -412,22 +438,6 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
               autoFocus
             />
 
-            <div className="flex flex-wrap gap-2">
-              {CATEGORY_TAGS.slice(0, 6).map((tag) => (
-                <Badge
-                  key={tag.label}
-                  variant="outline"
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSearchQuery(tag.query);
-                    searchImages(tag.query);
-                  }}
-                >
-                  {tag.label}
-                </Badge>
-              ))}
-            </div>
-
             <Button
               onClick={() => searchImages(searchQuery)}
               className="w-full"
@@ -440,20 +450,26 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
       </Dialog>
 
       {/* Analysis Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={() => {
-        setSelectedImage(null);
-        setAnalysisResult(null);
-      }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedImage(null);
+            setAnalysisResult(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl w-[95vw] sm:w-full p-0 gap-0 max-h-[95vh] flex flex-col">
+          <DialogHeader className="px-4 sm:px-6 pt-6 pb-3 shrink-0">
             <DialogTitle>
               {analyzing ? 'AI解析中...' : '解析結果'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
-            {selectedImage && (
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
+          <div className="overflow-y-auto flex-1 px-4 sm:px-6 pb-6">
+            <div className="space-y-4">
+              {selectedImage && (
+                <div className="relative w-full max-w-md mx-auto aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30">
                 <Image
                   src={selectedImage}
                   alt="Selected outfit"
@@ -461,29 +477,113 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
+                {analyzing && (
+                  <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300">
+                    <div className="relative">
+                      <Sparkles className="w-16 h-16 text-pink-400 animate-pulse" />
+                      <div className="absolute inset-0 w-16 h-16 bg-pink-400/30 rounded-full animate-ping" />
+                    </div>
+                    <div className="text-center space-y-2">
+                      <p className="text-gray-900 text-xl font-bold">
+                        AI解析中...
+                      </p>
+                      <p className="text-gray-600 text-sm font-medium">
+                        コーディネートを分析しています
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '0ms' }} />
+                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '150ms' }} />
+                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {analyzing && <LoadingSpinner message="AI解析中..." />}
-
             {analysisResult && (
               <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Button onClick={() => handleSaveOutfit(false)} className="flex-1">
+                {/* Season and Style */}
+                {(analysisResult.season || analysisResult.style) && (
+                  <div className="flex gap-2">
+                    {analysisResult.season && (
+                      <Badge variant="outline">{analysisResult.season}</Badge>
+                    )}
+                    {analysisResult.style && (
+                      <Badge variant="outline">{analysisResult.style}</Badge>
+                    )}
+                  </div>
+                )}
+
+                {/* Detected Items */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-800">検出されたアイテム</p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {analysisResult.items.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
+                          item.has_item
+                            ? 'bg-pink-50 border-2 border-pink-400 shadow-sm'
+                            : 'bg-white border-2 border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => toggleItemOwnership(index)}
+                      >
+                        <div
+                          className={`flex items-center justify-center w-6 h-6 rounded-lg transition-all duration-200 shrink-0 ${
+                            item.has_item
+                              ? 'bg-pink-400'
+                              : 'bg-white border-2 border-gray-300'
+                          }`}
+                        >
+                          {item.has_item && (
+                            <Check className="w-4 h-4 text-white stroke-[3]" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium truncate ${
+                            item.has_item ? 'text-pink-900' : 'text-gray-900'
+                          }`}>
+                            {item.item_type}
+                          </p>
+                          <div className="flex gap-2 mt-1 flex-wrap">
+                            <span className={`text-xs ${
+                              item.has_item ? 'text-pink-700' : 'text-gray-600'
+                            }`}>
+                              {item.category}
+                            </span>
+                            {item.color && (
+                              <span className={`text-xs ${
+                                item.has_item ? 'text-pink-700' : 'text-gray-600'
+                              }`}>
+                                • {item.color}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Save Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button onClick={() => handleSaveOutfit(false)} className="flex-1 w-full">
                     <Save className="w-4 h-4 mr-2" />
-                    コレクションに保存
+                    <span className="truncate">コレクションに保存</span>
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => handleSaveOutfit(true)}
-                    className="flex-1"
+                    className="flex-1 w-full"
                   >
                     <ArchiveIcon className="w-4 h-4 mr-2" />
-                    アーカイブに保存
+                    <span className="truncate">アーカイブに保存</span>
                   </Button>
                 </div>
               </div>
             )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

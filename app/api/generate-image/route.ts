@@ -43,10 +43,11 @@ suitable for a fashion coordinate app. The outfit should be clearly visible and 
       imageUrl,
       revisedPrompt: imageData.revised_prompt,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error generating image:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate image';
     return NextResponse.json(
-      { error: error.message || 'Failed to generate image' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

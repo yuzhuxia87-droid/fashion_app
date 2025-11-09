@@ -1,75 +1,35 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { signupAction } from './actions';
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Validate password
-    if (password !== confirmPassword) {
-      setError('パスワードが一致しません');
-      setLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('パスワードは6文字以上で入力してください');
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Call signup API
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const formData = new FormData(e.currentTarget);
+      const result = await signupAction(formData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || '登録に失敗しました');
+      if (result?.error) {
+        setError(result.error);
       }
-
-      // Sign in after successful signup
-      const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        throw signInError;
-      }
-
-      // Redirect to home page
-      router.push('/home');
-      router.refresh();
-    } catch (error: any) {
+      // If successful, signupAction will redirect, so we don't need to do anything here
+    } catch (error) {
       console.error('Signup error:', error);
-      setError(error.message || '登録に失敗しました');
+      setError('登録に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -79,74 +39,74 @@ export default function SignupPage() {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/" className="text-2xl font-bold text-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+          <Link href="/" className="text-2xl md:text-3xl font-bold text-gray-900">
             コーデアプリ
           </Link>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
+      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="w-full max-w-md lg:max-w-lg">
           <Card>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">新規登録</CardTitle>
-              <CardDescription>アカウントを作成してください</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl">新規登録</CardTitle>
+              <CardDescription className="text-sm md:text-base">アカウントを作成してください</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 md:p-8">
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription className="text-sm md:text-base">{error}</AlertDescription>
                 </Alert>
               )}
 
-              <form onSubmit={handleSignup} className="space-y-4">
+              <form onSubmit={handleSignup} className="space-y-4 md:space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email">メールアドレス</Label>
+                  <Label htmlFor="email" className="text-sm md:text-base">メールアドレス</Label>
                   <Input
                     type="email"
                     id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
                     required
                     placeholder="example@email.com"
+                    className="h-10 md:h-11 text-sm md:text-base"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">パスワード</Label>
+                  <Label htmlFor="password" className="text-sm md:text-base">パスワード</Label>
                   <Input
                     type="password"
                     id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                     required
                     minLength={6}
                     placeholder="6文字以上"
+                    className="h-10 md:h-11 text-sm md:text-base"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">パスワード（確認）</Label>
+                  <Label htmlFor="confirmPassword" className="text-sm md:text-base">パスワード（確認）</Label>
                   <Input
                     type="password"
                     id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    name="confirmPassword"
                     required
                     minLength={6}
                     placeholder="もう一度入力"
+                    className="h-10 md:h-11 text-sm md:text-base"
                   />
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="w-full h-10 md:h-11 text-sm md:text-base">
                   {loading ? '登録中...' : '登録する'}
                 </Button>
               </form>
 
-              <div className="text-center text-sm">
+              <div className="text-center text-sm md:text-base">
                 <p className="text-muted-foreground">
                   すでにアカウントをお持ちの方は{' '}
                   <Link

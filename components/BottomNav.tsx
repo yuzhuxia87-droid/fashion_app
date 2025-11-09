@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { Compass, Shirt, Search, Archive } from 'lucide-react';
+import { Compass, ShoppingBag, Search, Archive } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface NavItem {
@@ -24,7 +24,7 @@ export default function BottomNav() {
     },
     {
       id: 'collection',
-      icon: Shirt,
+      icon: ShoppingBag,
       label: 'コレクション',
       path: '/collection'
     },
@@ -47,7 +47,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#F5F5F5] safe-area-inset-bottom z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-white/20 safe-area-inset-bottom z-50 md:hidden">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-around items-center h-20">
           {navItems.map((item) => {
@@ -58,30 +58,20 @@ export default function BottomNav() {
               <button
                 key={item.id}
                 onClick={() => router.push(item.path)}
-                className="flex flex-col items-center justify-center gap-1 py-2 relative group transition-all duration-300 ease-out"
+                className="flex flex-col items-center justify-center gap-1 py-2 transition-all duration-200"
               >
-                {/* Icon with pill-shaped background */}
-                <div className="relative flex items-center justify-center w-16 h-12">
-                  {/* Pill-shaped Active Indicator - horizontal oval */}
-                  <div
-                    className={`absolute inset-0 rounded-full transition-all duration-300 ease-out ${
-                      active
-                        ? 'bg-[#FCE7F3] scale-100 opacity-100'
-                        : 'bg-transparent scale-95 opacity-0 group-hover:bg-[#FCE7F3] group-hover:scale-100 group-hover:opacity-100'
-                    }`}
-                  />
-                  <Icon
-                    className={`w-6 h-6 transition-all duration-200 relative z-10 ${
-                      active ? 'text-[#111827]' : 'text-[#6B7280]'
-                    }`}
-                    strokeWidth={2}
-                  />
-                </div>
+                {/* Icon - Instagram/Spotify style */}
+                <Icon
+                  className={`w-6 h-6 transition-all duration-200 ${
+                    active ? 'text-pink-400' : 'text-gray-500'
+                  }`}
+                  strokeWidth={active ? 2.5 : 1.5}
+                />
 
-                {/* Label - outside the circular background */}
+                {/* Label */}
                 <span
-                  className={`text-xs font-medium transition-all duration-200 ${
-                    active ? 'text-[#111827]' : 'text-[#6B7280]'
+                  className={`text-xs transition-all duration-200 ${
+                    active ? 'text-pink-400 font-semibold' : 'text-gray-500 font-normal'
                   }`}
                 >
                   {item.label}

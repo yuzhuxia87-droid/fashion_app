@@ -91,37 +91,30 @@ export default function HomeClient({ initialData }: HomeClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200/75 via-pink-200/60 to-purple-100/70">
       <PageHeader
         title="今日のコーデ"
-        subtitle={new Date().toLocaleDateString('ja-JP', {
-          month: 'long',
-          day: 'numeric',
-          weekday: 'short',
-        })}
+        subtitle={
+          weather
+            ? `${new Date().toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })} · ${Math.round(weather.temperature)}°C ${weather.description}`
+            : new Date().toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })
+        }
         showLogout
-        action={{
-          label: 'コーデを探す',
-          onClick: () => router.push('/browse'),
-          icon: Search,
-        }}
       />
 
-      <main className="max-w-7xl mx-auto px-5 py-6 pb-24 space-y-6">
-        {/* Weather Section */}
-        {weather && <WeatherDisplay weather={weather} />}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8 space-y-6 md:space-y-8">
 
         {/* Recommended Outfit */}
         {recommendedOutfit ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>今日のおすすめコーデ</CardTitle>
-              <CardDescription>
+          <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+            <CardHeader className="p-5 md:p-6">
+              <CardTitle className="text-lg md:text-xl">今日のおすすめコーデ</CardTitle>
+              <CardDescription className="text-sm md:text-base">
                 あなたにぴったりのコーディネートを提案します
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
+            <CardContent className="space-y-4 md:space-y-5 p-5 md:p-6 pt-0">
+              <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30">
                 <Image
                   src={recommendedOutfit.image_url}
                   alt="Recommended outfit"
@@ -132,9 +125,9 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                 <Button className="flex-1" onClick={handleDecide}>
-                  <ThumbsUp className="w-4 h-4 mr-2" />
+                  <ThumbsUp className="mr-2" />
                   これで決定！
                 </Button>
                 <Button
@@ -142,7 +135,7 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                   className="flex-1"
                   onClick={() => setShowAlternatives(!showAlternatives)}
                 >
-                  <RefreshCw className="w-4 h-4 mr-2" />
+                  <RefreshCw className="mr-2" />
                   他の提案を見る
                 </Button>
               </div>
@@ -162,16 +155,16 @@ export default function HomeClient({ initialData }: HomeClientProps) {
 
         {/* Alternative Outfits */}
         {showAlternatives && alternativeOutfits.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>その他の提案</CardTitle>
+          <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+            <CardHeader className="p-5 md:p-6">
+              <CardTitle className="text-lg md:text-xl">その他の提案</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <CardContent className="p-5 md:p-6 pt-0">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
                 {alternativeOutfits.map((outfit) => (
                   <div
                     key={outfit.id}
-                    className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 cursor-pointer group"
+                    className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30 cursor-pointer group"
                     onClick={() => setRecommendedOutfit(outfit)}
                   >
                     <Image
@@ -179,7 +172,7 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                       alt="Alternative outfit"
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
-                      sizes="(max-width: 768px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   </div>
                 ))}
@@ -196,7 +189,7 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                     <LoadingSpinner size="sm" />
                   ) : (
                     <>
-                      <RefreshCw className="w-4 h-4 mr-2" />
+                      <RefreshCw className="mr-2" />
                       さらに見る
                     </>
                   )}

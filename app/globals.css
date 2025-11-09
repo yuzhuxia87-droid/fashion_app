@@ -1,84 +1,193 @@
 @import "tailwindcss";
 
 :root {
-  /* Monochrome + Purple Accent (Notion/Linear/Tailwind UI inspired) */
-  --background: 0 0% 100%; /* #FFFFFF pure white */
-  --foreground: 220 13% 9%; /* #111827 almost black - primary text */
+  /* ========================================
+     Grayscale palette (10 steps)
+     ======================================== */
+  --gray-950: hsl(220 13% 5%);    /* #0C0D0F - almost black */
+  --gray-900: hsl(220 13% 9%);    /* #111827 - darkest (headings) */
+  --gray-800: hsl(220 13% 15%);   /* #1F2937 - darker (subheadings) */
+  --gray-700: hsl(217 19% 27%);   /* #374151 - dark (icons, labels) */
+  --gray-600: hsl(220 9% 46%);    /* #6B7280 - medium (body text) */
+  --gray-500: hsl(220 9% 55%);    /* #9CA3AF - medium-light (placeholders) */
+  --gray-400: hsl(220 14% 70%);   /* #D1D5DB - light (disabled text) */
+  --gray-300: hsl(220 13% 80%);   /* #E0E3E7 - lighter (dividers) */
+  --gray-200: hsl(220 13% 91%);   /* #E5E7EB - very light (borders) */
+  --gray-100: hsl(220 14% 96%);   /* #F3F4F6 - ultra light (backgrounds) */
+  --gray-50: hsl(220 14% 98%);    /* #F9FAFB - almost white */
 
-  --card: 0 0% 100%; /* White */
-  --card-foreground: 220 13% 9%; /* #111827 */
+  /* ========================================
+     Brand Pink palette (7 steps)
+     ======================================== */
+  --pink-50: hsl(322 87% 98%);    /* #FEF5FB - background tint */
+  --pink-100: hsl(322 87% 95%);   /* #FCE7F3 - badges, light backgrounds */
+  --pink-200: hsl(330 81% 88%);   /* #F9A8D4 - hover backgrounds */
+  --pink-300: hsl(330 81% 78%);   /* #F472B6 - light accents */
+  --pink-400: hsl(339 75% 73%);   /* #ee87ab - primary brand color (2025 pastel) */
+  --pink-500: hsl(330 81% 60%);   /* #EC4899 - button hover state */
+  --pink-600: hsl(330 81% 52%);   /* #DB2777 - darker hover state */
+  --pink-700: hsl(330 81% 44%);   /* #BE185D - button active state */
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 13% 9%;
+  /* ========================================
+     Accent Purple palette (4 steps)
+     ======================================== */
+  --purple-50: hsl(244 63% 97%);  /* #F0EDFF - subtle background */
+  --purple-100: hsl(244 63% 95%); /* #E8E5FF - light background */
+  --purple-200: hsl(244 63% 90%); /* #DCD7FF - hover state */
+  --purple-500: hsl(244 63% 70%); /* #8B7CFF - accent color */
 
-  /* Primary: Pink accent (洗練された楽しさ) */
-  --primary: 330 81% 60%; /* #EC4899 rose pink - main brand color */
-  --primary-foreground: 0 0% 100%; /* White text on primary */
-  --primary-light: 322 87% 96%; /* #FCE7F3 light pink - for hover/focus */
+  /* ========================================
+     Soft Red palette (for destructive actions)
+     ======================================== */
+  --red-50: hsl(0 86% 97%);       /* #FEF2F2 - very light red background */
+  --red-100: hsl(0 93% 94%);      /* #FEE2E2 - light red background */
+  --red-600: hsl(0 84% 60%);      /* #EF4444 - strong red for text */
+  --red-700: hsl(0 74% 42%);      /* #DC2626 - darker red for hover */
 
-  /* Secondary: Purple accent (サブカラー) */
-  --secondary-accent: 244 63% 95%; /* #E8E5FF light purple - kept as sub-color */
+  /* ========================================
+     Semantic tokens (shadcn/ui compatible)
+     ======================================== */
+  --background: hsl(0 0% 100%);           /* Page background - pure white */
+  --foreground: hsl(220 13% 9%);          /* Primary text */
+  --surface: hsl(0 0% 100%);              /* Surface color */
 
-  /* Secondary: Monochrome grays */
-  --secondary: 220 14% 96%; /* #F3F4F6 very light gray */
-  --secondary-foreground: 220 13% 9%; /* #111827 dark text */
+  --card: hsl(0 0% 100%);                 /* Card background */
+  --card-foreground: hsl(220 13% 9%);     /* Card text */
 
-  --muted: 220 14% 96%; /* #F3F4F6 very light gray */
-  --muted-foreground: 220 9% 46%; /* #6B7280 medium gray - for less important text */
+  --popover: hsl(0 0% 100%);              /* Popover background */
+  --popover-foreground: hsl(220 13% 9%);  /* Popover text */
 
-  --accent: 220 13% 9%; /* #111827 dark gray - monochrome focus */
-  --accent-foreground: 0 0% 100%;
+  --primary: hsl(330 81% 60%);            /* Primary brand color */
+  --primary-foreground: hsl(0 0% 100%);   /* Text on primary */
+  --primary-light: hsl(322 87% 95%);      /* Light primary (for hover/bg) */
 
-  --destructive: 0 84% 60%; /* #EF4444 red */
-  --destructive-foreground: 0 0% 100%;
+  --secondary: hsl(220 14% 96%);          /* Secondary background */
+  --secondary-foreground: hsl(220 13% 9%); /* Secondary text */
+  --secondary-accent: hsl(244 63% 95%);   /* Purple accent background */
 
-  --border: 220 13% 91%; /* #E5E7EB light gray */
-  --input: 220 13% 91%;
-  --ring: 239 84% 67%; /* #6366F1 purple ring */
+  --muted: hsl(220 14% 96%);              /* Muted background */
+  --muted-foreground: hsl(220 9% 46%);    /* Muted text */
 
-  --surface: 0 0% 100%; /* Material Design 3: Surface color (white) */
+  --accent: hsl(220 13% 9%);              /* Accent color */
+  --accent-foreground: hsl(0 0% 100%);    /* Accent text */
 
-  --radius: 9999px; /* Full rounded (pill-shaped) */
+  --destructive: hsl(0 93% 94%);          /* Soft destructive background (red-100) */
+  --destructive-foreground: hsl(0 84% 60%); /* Destructive text (red-600) */
+
+  --border: hsl(220 13% 91%);             /* Default border */
+  --input: hsl(220 13% 91%);              /* Input border */
+  --ring: hsl(239 84% 67%);               /* Focus ring */
+
+  --radius: 9999px;      /* Border radius (pill-shaped) */
 }
 
 @theme inline {
-  /* Color utilities */
+  /* ========================================
+     Grayscale utilities (complete 10-step)
+     ======================================== */
+  --color-gray-950: var(--gray-950);
+  --color-gray-900: var(--gray-900);
+  --color-gray-800: var(--gray-800);
+  --color-gray-700: var(--gray-700);
+  --color-gray-600: var(--gray-600);
+  --color-gray-500: var(--gray-500);
+  --color-gray-400: var(--gray-400);
+  --color-gray-300: var(--gray-300);
+  --color-gray-200: var(--gray-200);
+  --color-gray-100: var(--gray-100);
+  --color-gray-50: var(--gray-50);
+
+  /* ========================================
+     Brand Pink utilities (7-step)
+     ======================================== */
+  --color-pink-50: var(--pink-50);
+  --color-pink-100: var(--pink-100);
+  --color-pink-200: var(--pink-200);
+  --color-pink-300: var(--pink-300);
+  --color-pink-400: var(--pink-400);
+  --color-pink-500: var(--pink-500);
+  --color-pink-600: var(--pink-600);
+  --color-pink-700: var(--pink-700);
+
+  /* ========================================
+     Accent Purple utilities (4-step)
+     ======================================== */
+  --color-purple-50: var(--purple-50);
+  --color-purple-100: var(--purple-100);
+  --color-purple-200: var(--purple-200);
+  --color-purple-500: var(--purple-500);
+
+  /* ========================================
+     Soft Red utilities (4-step)
+     ======================================== */
+  --color-red-50: var(--red-50);
+  --color-red-100: var(--red-100);
+  --color-red-600: var(--red-600);
+  --color-red-700: var(--red-700);
+
+  /* ========================================
+     Semantic color utilities (shadcn/ui compatible)
+     ======================================== */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-light: var(--primary-light);
-  --color-secondary-accent: var(--secondary-accent);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary-accent: var(--secondary-accent);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Border radius */
-  --radius: var(--radius);
+  /* ========================================
+     Border radius
+     ======================================== */
+  --radius: 9999px;
   --radius-lg: 1rem;
   --radius-md: 0.5rem;
   --radius-sm: 0.25rem;
-
-  /* Fonts */
-  --font-sans: var(--font-sans);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: hsl(0 0% 4%);
+    --foreground: hsl(0 0% 93%);
   }
+}
+
+/* ========================================
+   iOS/Mobile Scroll Fix
+   ======================================== */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: pan-y pinch-zoom;
+  overscroll-behavior-y: contain;
 }
 
 body {

@@ -19,7 +19,7 @@ const ClothingItemSchema = z.object({
   item_type: z.string(),
   has_item: z.boolean(),
   created_at: z.string(),
-  updated_at: z.string(),
+  updated_at: z.string().optional(),
 });
 
 export const OutfitWithStatsSchema = z.object({
@@ -35,6 +35,8 @@ export const OutfitWithStatsSchema = z.object({
   wear_count: z.number().int().nonnegative(),
   last_worn: z.string().nullable(),
   clothing_items: z.array(ClothingItemSchema).optional(),
+  wear_history: z.array(z.any()).optional(), // For server-side fetched data
+  items: z.array(ClothingItemSchema).optional(), // Alias for clothing_items
 });
 
 export const OutfitsResponseSchema = z.object({

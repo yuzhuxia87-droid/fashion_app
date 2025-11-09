@@ -1,5 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface UnsplashPhoto {
+  id: string;
+  urls: {
+    regular: string;
+    small: string;
+  };
+  description: string | null;
+  alt_description: string | null;
+  user: {
+    name: string;
+    links: {
+      html: string;
+    };
+  };
+  links: {
+    download_location: string;
+  };
+}
+
 // Discovery用の多様なクエリ
 const DISCOVERY_QUERIES = [
   'casual outfit',
@@ -55,7 +74,7 @@ export async function GET(request: NextRequest) {
       }
 
       const data = await response.json();
-      return data.results.map((photo: any) => ({
+      return data.results.map((photo: UnsplashPhoto) => ({
         id: photo.id,
         url: photo.urls.regular,
         thumb: photo.urls.small,
@@ -69,7 +88,15 @@ export async function GET(request: NextRequest) {
     const results = await Promise.all(fetchPromises);
 
     // 2つのクエリ結果を交互に混ぜる（より多様性を出すため）
-    const images: any[] = [];
+    const images: Array<{
+      id: string;
+      url: string;
+      thumb: string;
+      description: string | null;
+      photographer: string;
+      photographerUrl: string;
+      downloadLocation: string;
+    }> = [];
     const maxLength = Math.max(results[0].length, results[1].length);
 
     for (let i = 0; i < maxLength; i++) {

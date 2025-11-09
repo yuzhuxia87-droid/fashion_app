@@ -19,9 +19,10 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get('file');
 
-    if (!file) {
+    // Validate file exists and is a File instance
+    if (!file || !(file instanceof File)) {
       return NextResponse.json(
         { error: 'ファイルが見つかりません' },
         { status: 400 }

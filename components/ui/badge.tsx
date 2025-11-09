@@ -9,12 +9,12 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-[#F3F4F6] text-[#111827]",
+          "border-transparent bg-pink-100 text-pink-700 shadow-sm",
         secondary:
-          "border-transparent bg-[#E5E7EB] text-[#111827]",
+          "border-transparent bg-purple-100 text-purple-500 shadow-sm",
         destructive:
-          "border-transparent bg-red-50 text-red-700",
-        outline: "border-transparent bg-white shadow-sm text-[#111827]",
+          "border-transparent bg-red-100 text-red-600 shadow-sm",
+        outline: "border-white/20 bg-white/90 backdrop-blur-md shadow-lg text-gray-900",
       },
     },
     defaultVariants: {

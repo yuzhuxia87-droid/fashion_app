@@ -1,5 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface UnsplashPhoto {
+  id: string;
+  urls: {
+    regular: string;
+    small: string;
+  };
+  description: string | null;
+  alt_description: string | null;
+  user: {
+    name: string;
+    links: {
+      html: string;
+    };
+  };
+  links: {
+    download_location: string;
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -35,7 +54,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     // Format the response
-    const images = data.results.map((photo: any) => ({
+    const images = data.results.map((photo: UnsplashPhoto) => ({
       id: photo.id,
       url: photo.urls.regular,
       thumb: photo.urls.small,

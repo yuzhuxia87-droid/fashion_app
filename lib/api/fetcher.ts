@@ -48,6 +48,7 @@ export async function fetchApi<T>(
   try {
     const response = await fetch(url, {
       cache: 'no-store',
+      credentials: 'include', // Always include cookies
       ...options,
     });
 
@@ -67,7 +68,7 @@ export async function fetchApi<T>(
     if (!result.success) {
       console.error('API validation error:', {
         endpoint,
-        errors: result.error.errors,
+        errors: result.error.issues,
         data: json,
       });
 
@@ -75,7 +76,7 @@ export async function fetchApi<T>(
         'API response validation failed',
         undefined,
         'VALIDATION_ERROR',
-        result.error.errors
+        result.error.issues
       );
     }
 
