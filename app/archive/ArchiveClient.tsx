@@ -137,23 +137,25 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
                       )}
                     </div>
 
-                    <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-8 px-2"
-                        onClick={() => handleUnarchive(outfit.id)}
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1 h-8 px-2 text-gray-600 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => handleDelete(outfit.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-8 px-2"
+                          onClick={() => handleUnarchive(outfit.id)}
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-8 px-2"
+                          onClick={() => handleDelete(outfit.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -182,23 +184,25 @@ export default function ArchiveClient({ initialOutfits }: ArchiveClientProps) {
                       />
                     </div>
 
-                    <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-8 px-2"
-                        onClick={() => handleUnarchive(outfit.id)}
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1 h-8 px-2 text-gray-600 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => handleDelete(outfit.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-8 px-2"
+                          onClick={() => handleUnarchive(outfit.id)}
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-8 px-2"
+                          onClick={() => handleDelete(outfit.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
