@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,49 @@ export default function HomeClient({ initialData }: HomeClientProps) {
   );
   const [showAlternatives, setShowAlternatives] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const alternativesRef = useRef<HTMLDivElement>(null);
+
+  // Debug: コンポーネント全体の状態を確認
+  console.log('[DEBUG] Component render - alternativeOutfits count:', alternativeOutfits.length);
+  console.log('[DEBUG] Component render - showAlternatives:', showAlternatives);
+  console.log('[DEBUG] Component render - initialData.recommendations:', initialData.recommendations.length);
+
+  // Auto-scroll when alternatives are shown (mobile-optimized)
+  useEffect(() => {
+    console.log('[DEBUG] useEffect triggered - showAlternatives:', showAlternatives);
+    console.log('[DEBUG] useEffect triggered - alternativesRef.current:', alternativesRef.current);
+
+    if (showAlternatives && alternativesRef.current) {
+      console.log('[DEBUG] Starting scroll animation...');
+      // モバイル対応：requestAnimationFrameを使用してレンダリング完了を待つ
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (alternativesRef.current) {
+            const element = alternativesRef.current;
+            const rect = element.getBoundingClientRect();
+            const headerHeight = 80; // PageHeaderの高さを考慮
+
+            console.log('[DEBUG] Scroll calculation:', {
+              'rect.top': rect.top,
+              'window.pageYOffset': window.pageYOffset,
+              'headerHeight': headerHeight,
+              'scrollTo': window.pageYOffset + rect.top - headerHeight
+            });
+
+            // window.scrollToを使用（モバイルでより確実）
+            window.scrollTo({
+              top: window.pageYOffset + rect.top - headerHeight,
+              behavior: 'smooth'
+            });
+
+            console.log('[DEBUG] Scrolled to alternatives section');
+          }
+        });
+      });
+    } else {
+      console.log('[DEBUG] Scroll condition not met');
+    }
+  }, [showAlternatives]);
 
   const handleDecide = async () => {
     if (!recommendedOutfit) return;
@@ -133,7 +176,11 @@ export default function HomeClient({ initialData }: HomeClientProps) {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => setShowAlternatives(!showAlternatives)}
+                  onClick={() => {
+                    console.log('[DEBUG] Button clicked - current showAlternatives:', showAlternatives);
+                    console.log('[DEBUG] Button clicked - alternativeOutfits count:', alternativeOutfits.length);
+                    setShowAlternatives(!showAlternatives);
+                  }}
                 >
                   <RefreshCw className="mr-2" />
                   他の提案を見る
@@ -154,49 +201,66 @@ export default function HomeClient({ initialData }: HomeClientProps) {
         )}
 
         {/* Alternative Outfits */}
+        {(() => {
+          console.log('[DEBUG] Rendering condition check:', {
+            showAlternatives,
+            'alternativeOutfits.length': alternativeOutfits.length,
+            'condition met': showAlternatives && alternativeOutfits.length > 0
+          });
+          return null;
+        })()}
         {showAlternatives && alternativeOutfits.length > 0 && (
-          <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
-            <CardHeader className="p-5 md:p-6">
-              <CardTitle className="text-lg md:text-xl">その他の提案</CardTitle>
-            </CardHeader>
-            <CardContent className="p-5 md:p-6 pt-0">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
-                {alternativeOutfits.map((outfit) => (
-                  <div
-                    key={outfit.id}
-                    className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30 cursor-pointer group"
-                    onClick={() => setRecommendedOutfit(outfit)}
-                  >
-                    <Image
-                      src={outfit.image_url}
-                      alt="Alternative outfit"
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                ))}
-              </div>
+          <div ref={alternativesRef}>
+            <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 border-0">
+              <CardHeader className="p-5 md:p-6">
+                <CardTitle className="text-lg md:text-xl">その他の提案</CardTitle>
+              </CardHeader>
+              <CardContent className="p-5 md:p-6 pt-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
+                  {alternativeOutfits.map((outfit) => (
+                    <div
+                      key={outfit.id}
+                      className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30 cursor-pointer group"
+                      onClick={() => setRecommendedOutfit(outfit)}
+                    >
+                      <Image
+                        src={outfit.image_url}
+                        alt="Alternative outfit"
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-              {alternativeOutfits.length >= 3 && (
-                <Button
-                  variant="outline"
-                  className="w-full mt-4"
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    <>
-                      <RefreshCw className="mr-2" />
-                      さらに見る
-                    </>
-                  )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+            {(() => {
+              console.log('[DEBUG] "さらに見る" button condition check:', {
+                'alternativeOutfits.length': alternativeOutfits.length,
+                'condition met (>=3)': alternativeOutfits.length >= 3
+              });
+              return null;
+            })()}
+            {alternativeOutfits.length >= 3 && (
+              <Button
+                variant="outline"
+                className="w-full mt-6 bg-white shadow-md"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? (
+                  <LoadingSpinner size="sm" />
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2" />
+                    さらに見る
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         )}
       </main>
 

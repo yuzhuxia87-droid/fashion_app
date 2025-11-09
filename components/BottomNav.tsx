@@ -60,23 +60,13 @@ export default function BottomNav() {
                 onClick={() => router.push(item.path)}
                 className="flex flex-col items-center justify-center gap-1 py-2 transition-all duration-300 ease-out"
               >
-                {/* Icon with circular background */}
-                <div className="relative flex items-center justify-center">
-                  {/* Circular background (active state) */}
-                  <div
-                    className={`absolute inset-0 rounded-full transition-all duration-300 ease-out ${
-                      active ? 'bg-pink-100 scale-100 opacity-100' : 'bg-transparent scale-75 opacity-0'
-                    }`}
-                    style={{ width: '40px', height: '40px' }}
-                  />
-                  {/* Icon */}
-                  <Icon
-                    className={`relative w-6 h-6 transition-all duration-300 ease-out ${
-                      active ? 'text-pink-400' : 'text-gray-500'
-                    }`}
-                    strokeWidth={active ? 2.5 : 1.5}
-                  />
-                </div>
+                {/* Icon */}
+                <Icon
+                  className={`w-6 h-6 transition-all duration-300 ease-out ${
+                    active ? 'text-pink-400' : 'text-gray-500'
+                  }`}
+                  strokeWidth={active ? 2.5 : 1.5}
+                />
 
                 {/* Label */}
                 <span
