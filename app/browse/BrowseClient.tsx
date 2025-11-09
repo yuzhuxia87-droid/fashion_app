@@ -15,7 +15,8 @@ import {
   Loader2,
   Check,
   Archive as ArchiveIcon,
-  Save
+  Save,
+  ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -64,6 +65,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [showAllTags, setShowAllTags] = useState(false);
 
   // Generate tab states
   const [generateDescription, setGenerateDescription] = useState('');
@@ -263,7 +265,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'discover' | 'generate')}>
-          <TabsList className="grid w-full grid-cols-2 mb-6 md:mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="discover">
               <Search className="w-4 h-4 mr-2" />
               発見
@@ -275,7 +277,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
           </TabsList>
 
           {/* Discover Tab */}
-          <TabsContent value="discover" className="mt-0 space-y-6 md:space-y-8">
+          <TabsContent value="discover" className="mt-0 space-y-4">
             {/* Search Button */}
             <Button
               variant="outline"
@@ -286,23 +288,79 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
               キーワードで検索
             </Button>
 
-            {/* Category Tags */}
-            <div className="flex flex-wrap gap-2 md:gap-3">
-              {CATEGORY_TAGS.map((tag) => (
+            {/* Category Tags - Collapsible */}
+            <div className="space-y-2">
+              {/* Featured Tags (always visible) */}
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                {CATEGORY_TAGS.slice(0, 3).map((tag) => (
+                  <Button
+                    key={tag.label}
+                    variant={activeTag === tag.label ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 text-xs md:text-sm"
+                    onClick={() => {
+                      setActiveTag(tag.label);
+                      setSearchQuery(tag.query);
+                      searchImages(tag.query, true);
+                    }}
+                  >
+                    {tag.label}
+                  </Button>
+                ))}
+
                 <Button
-                  key={tag.label}
-                  variant={activeTag === tag.label ? 'default' : 'outline'}
+                  variant="ghost"
                   size="sm"
-                  className="h-8 text-xs md:text-sm"
-                  onClick={() => {
-                    setActiveTag(tag.label);
-                    setSearchQuery(tag.query);
-                    searchImages(tag.query, true);
-                  }}
+                  className="h-8 text-xs md:text-sm gap-1 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                  onClick={() => setShowAllTags(!showAllTags)}
+                  aria-expanded={showAllTags}
+                  aria-controls="category-tags-expanded"
+                  aria-label={showAllTags ? 'タグを折りたたむ' : 'すべてのタグを表示'}
                 >
-                  {tag.label}
+                  {showAllTags ? 'たたむ' : 'もっと見る'}
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ease-out ${
+                      showAllTags ? 'rotate-180' : ''
+                    }`}
+                  />
                 </Button>
-              ))}
+              </div>
+
+              {/* Expanded Tags (slide down) */}
+              <div
+                id="category-tags-expanded"
+                className="grid transition-all duration-300 ease-out"
+                style={{
+                  gridTemplateRows: showAllTags ? '1fr' : '0fr',
+                }}
+              >
+                <div className="overflow-hidden">
+                  <div className="flex flex-wrap gap-2 md:gap-3">
+                    {CATEGORY_TAGS.slice(3).map((tag, index) => (
+                      <Button
+                        key={tag.label}
+                        variant={activeTag === tag.label ? 'default' : 'outline'}
+                        size="sm"
+                        className={`h-8 text-xs md:text-sm transition-all duration-300 ${
+                          showAllTags
+                            ? 'opacity-100 translate-y-0'
+                            : 'opacity-0 -translate-y-2'
+                        }`}
+                        style={{
+                          transitionDelay: showAllTags ? `${index * 30}ms` : '0ms',
+                        }}
+                        onClick={() => {
+                          setActiveTag(tag.label);
+                          setSearchQuery(tag.query);
+                          searchImages(tag.query, true);
+                        }}
+                      >
+                        {tag.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Image Grid */}
@@ -459,16 +517,15 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
           }
         }}
       >
-        <DialogContent className="max-w-2xl w-[95vw] sm:w-full p-0 gap-0 max-h-[95vh] flex flex-col">
-          <DialogHeader className="px-4 sm:px-6 pt-6 pb-3 shrink-0">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
             <DialogTitle>
               {analyzing ? 'AI解析中...' : '解析結果'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="overflow-y-auto flex-1 px-4 sm:px-6 pb-6">
-            <div className="space-y-4">
-              {selectedImage && (
+          <div className="space-y-4">
+            {selectedImage && (
                 <div className="relative w-full max-w-md mx-auto aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30">
                 <Image
                   src={selectedImage}
@@ -478,23 +535,17 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 {analyzing && (
-                  <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300">
+                  <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
                     <div className="relative">
-                      <Sparkles className="w-16 h-16 text-pink-400 animate-pulse" />
-                      <div className="absolute inset-0 w-16 h-16 bg-pink-400/30 rounded-full animate-ping" />
+                      <Loader2 className="w-12 h-12 text-pink-400 animate-spin" />
                     </div>
-                    <div className="text-center space-y-2">
-                      <p className="text-gray-900 text-xl font-bold">
+                    <div className="text-center space-y-1">
+                      <p className="text-gray-900 text-lg font-semibold">
                         AI解析中...
                       </p>
-                      <p className="text-gray-600 text-sm font-medium">
+                      <p className="text-gray-600 text-sm">
                         コーディネートを分析しています
                       </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '0ms' }} />
-                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '150ms' }} />
-                      <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce shadow-lg shadow-pink-400/50" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 )}
@@ -524,8 +575,8 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                         key={index}
                         className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
                           item.has_item
-                            ? 'bg-pink-50 border-2 border-pink-400 shadow-sm'
-                            : 'bg-white border-2 border-gray-200 hover:border-gray-300'
+                            ? 'bg-pink-50/50 shadow-md shadow-pink-400/20'
+                            : 'bg-white shadow-sm hover:shadow-md'
                         }`}
                         onClick={() => toggleItemOwnership(index)}
                       >
@@ -541,21 +592,15 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-medium truncate ${
-                            item.has_item ? 'text-pink-900' : 'text-gray-900'
-                          }`}>
+                          <p className="text-sm font-medium truncate text-gray-900">
                             {item.item_type}
                           </p>
                           <div className="flex gap-2 mt-1 flex-wrap">
-                            <span className={`text-xs ${
-                              item.has_item ? 'text-pink-700' : 'text-gray-600'
-                            }`}>
+                            <span className="text-xs text-gray-600">
                               {item.category}
                             </span>
                             {item.color && (
-                              <span className={`text-xs ${
-                                item.has_item ? 'text-pink-700' : 'text-gray-600'
-                              }`}>
+                              <span className="text-xs text-gray-600">
                                 • {item.color}
                               </span>
                             )}
@@ -568,7 +613,10 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
 
                 {/* Save Buttons */}
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Button onClick={() => handleSaveOutfit(false)} className="flex-1 w-full">
+                  <Button
+                    onClick={() => handleSaveOutfit(false)}
+                    className="flex-1 w-full"
+                  >
                     <Save className="w-4 h-4 mr-2" />
                     <span className="truncate">コレクションに保存</span>
                   </Button>
@@ -583,7 +631,6 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                 </div>
               </div>
             )}
-            </div>
           </div>
         </DialogContent>
       </Dialog>

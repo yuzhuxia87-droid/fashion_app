@@ -74,48 +74,51 @@ export default function OutfitCard({
         )}
       </div>
 
-      {/* Stats below image */}
-      {showStats && (
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-3 text-xs text-gray-700">
-            <span className="flex items-center gap-1.5">
-              <Shirt className="w-3.5 h-3.5" />
-              {outfit.wear_count || 0}回
-            </span>
-            {outfit.last_worn && (
-              <span>
-                {new Date(outfit.last_worn).toLocaleDateString('ja-JP', {
-                  month: 'short',
-                  day: 'numeric',
-                })}
+      {/* Stats and Actions - unified in CardContent */}
+      {(showStats || onArchive || onDelete) && (
+        <CardContent className="p-3 space-y-2">
+          {/* Stats */}
+          {showStats && (
+            <div className="flex items-center gap-3 text-xs text-gray-700">
+              <span className="flex items-center gap-1.5">
+                <Shirt className="w-3.5 h-3.5" />
+                {outfit.wear_count || 0}回
               </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Actions */}
-      {(onArchive || onDelete) && (
-        <CardContent className="p-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-          {onArchive && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-8 px-2"
-              onClick={handleArchiveClick}
-            >
-              <Archive className="w-3.5 h-3.5" />
-            </Button>
+              {outfit.last_worn && (
+                <span>
+                  {new Date(outfit.last_worn).toLocaleDateString('ja-JP', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+              )}
+            </div>
           )}
-          {onDelete && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-8 px-2"
-              onClick={handleDeleteClick}
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
+
+          {/* Actions */}
+          {(onArchive || onDelete) && (
+            <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+              {onArchive && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-8 px-2"
+                  onClick={handleArchiveClick}
+                >
+                  <Archive className="w-3.5 h-3.5" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-8 px-2"
+                  onClick={handleDeleteClick}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              )}
+            </div>
           )}
         </CardContent>
       )}

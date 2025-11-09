@@ -148,7 +148,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
             }
           }}
         >
-          <TabsList className="grid w-full grid-cols-3 mb-6 md:mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="all">
               <Grid3x3 className="w-4 h-4 mr-1 md:mr-2" />
               すべて

@@ -58,7 +58,7 @@ export default function PageHeader({
 
   return (
     <header className="bg-white/80 backdrop-blur-xl shadow-sm border-b border-white/20 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
             {showBack && (
