@@ -76,7 +76,7 @@
 
   --border: hsl(220 13% 91%);             /* Default border */
   --input: hsl(220 13% 91%);              /* Input border */
-  --ring: hsl(239 84% 67%);               /* Focus ring */
+  --ring: hsl(330 81% 60%);               /* Focus ring (pink-500 for brand consistency) */
 
   --radius: 9999px;      /* Border radius (pill-shaped) */
 }
