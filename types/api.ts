@@ -40,9 +40,10 @@ export interface OutfitsResponse {
 
 /**
  * Outfit with computed statistics
+ * Always uses 'items' as the canonical field for clothing items
  */
 export interface OutfitWithStats extends Outfit {
-  clothing_items?: ClothingItem[];
+  items: ClothingItem[];
   wear_count: number;
   last_worn: string | null;
 }
@@ -166,7 +167,7 @@ export interface RecommendationsQuery {
  */
 export interface RecommendationsResponse {
   success: boolean;
-  recommendations: OutfitWithDetails[];
+  recommendations: OutfitWithStats[];
 }
 
 // ============================================================================

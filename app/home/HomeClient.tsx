@@ -10,7 +10,6 @@ import Image from 'next/image';
 
 import BottomNav from '@/components/BottomNav';
 import PageHeader from '@/components/PageHeader';
-import WeatherDisplay from '@/components/WeatherDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 

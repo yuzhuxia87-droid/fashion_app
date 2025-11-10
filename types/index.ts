@@ -102,8 +102,8 @@ export interface RecommendationFilters {
   favoriteOnly?: boolean;
 }
 
-export interface OutfitWithDetails extends Outfit {
-  items: ClothingItem[];
-  last_worn?: string;
-  wear_count?: number; // Computed field from wear_history
-}
+/**
+ * @deprecated Use OutfitWithStats from types/api.ts instead
+ * This type alias is kept for backward compatibility
+ */
+export type OutfitWithDetails = import('./api').OutfitWithStats;

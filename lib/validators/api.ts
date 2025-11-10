@@ -34,9 +34,14 @@ export const OutfitWithStatsSchema = z.object({
   updated_at: z.string(),
   wear_count: z.number().int().nonnegative(),
   last_worn: z.string().nullable(),
+  items: z.array(ClothingItemSchema),
+  // Accept clothing_items from Supabase but transform to items
   clothing_items: z.array(ClothingItemSchema).optional(),
-  wear_history: z.array(z.any()).optional(), // For server-side fetched data
-  items: z.array(ClothingItemSchema).optional(), // Alias for clothing_items
+}).transform((data) => {
+  // Ensure items is always populated from clothing_items if needed
+  const items = data.items || data.clothing_items || [];
+  const { clothing_items, ...rest } = data;
+  return { ...rest, items };
 });
 
 export const OutfitsResponseSchema = z.object({

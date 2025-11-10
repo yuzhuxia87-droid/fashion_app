@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchOutfitsWithStats } from '@/lib/data/outfits';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,10 +12,7 @@ export async function GET(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
-    console.log('[API /outfits GET] Auth check - User:', user?.id, 'Error:', authError?.message);
-
     if (authError || !user) {
-      console.error('[API /outfits GET] Unauthorized access attempt');
       return NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
@@ -24,68 +22,19 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const isArchived = searchParams.get('archived') === 'true';
 
-    // Get outfits with clothing items
-    const { data: outfits, error } = await supabase
-      .from('outfits')
-      .select(
-        `
-        *,
-        clothing_items (*)
-      `
-      )
-      .eq('user_id', user.id)
-      .eq('is_archived', isArchived)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching outfits:', error);
-      return NextResponse.json(
-        { error: 'コーディネートの取得に失敗しました' },
-        { status: 500 }
-      );
-    }
-
-    // Get wear history for each outfit
-    const outfitIds = (outfits || []).map(o => o.id);
-    const { data: wearHistory, error: wearError } = await supabase
-      .from('wear_history')
-      .select('outfit_id, worn_date')
-      .in('outfit_id', outfitIds)
-      .order('worn_date', { ascending: false });
-
-    if (wearError) {
-      console.error('Error fetching wear history:', wearError);
-    }
-
-    // Aggregate wear history data
-    const wearStats = (wearHistory || []).reduce((acc: Record<string, { count: number; lastWorn: string | null }>, record: { outfit_id: string; worn_date: string }) => {
-      if (!acc[record.outfit_id]) {
-        acc[record.outfit_id] = {
-          count: 0,
-          lastWorn: null,
-        };
-      }
-      acc[record.outfit_id].count++;
-      const currentLastWorn = acc[record.outfit_id].lastWorn;
-      if (!currentLastWorn || record.worn_date > currentLastWorn) {
-        acc[record.outfit_id].lastWorn = record.worn_date;
-      }
-      return acc;
-    }, {});
-
-    // Merge wear stats with outfits
-    const outfitsWithStats = (outfits || []).map((outfit: { id: string; [key: string]: unknown }) => ({
-      ...outfit,
-      wear_count: wearStats[outfit.id]?.count || 0,
-      last_worn: wearStats[outfit.id]?.lastWorn || null,
-    }));
+    // Use shared utility function to fetch outfits with stats
+    const outfitsWithStats = await fetchOutfitsWithStats({
+      supabase,
+      userId: user.id,
+      isArchived,
+    });
 
     return NextResponse.json({
       success: true,
       outfits: outfitsWithStats,
     });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching outfits:', error);
     return NextResponse.json(
       { error: 'サーバーエラーが発生しました' },
       { status: 500 }

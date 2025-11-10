@@ -1,16 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
-import {
-  OutfitWithDetails,
-  WeatherData,
-  RecommendationFilters,
-} from '@/types';
+import { WeatherData, RecommendationFilters } from '@/types';
+import { OutfitWithStats } from '@/types/api';
 
 export async function getRecommendedOutfits(
   userId: string,
   filters: RecommendationFilters = {},
   weather?: WeatherData,
   count: number = 3
-): Promise<OutfitWithDetails[]> {
+): Promise<OutfitWithStats[]> {
   const supabase = await createClient();
 
   try {
@@ -45,10 +42,11 @@ export async function getRecommendedOutfits(
     }
 
     // Transform and filter outfits
-    let candidates: OutfitWithDetails[] = outfits.map((outfit) => ({
+    let candidates: OutfitWithStats[] = outfits.map((outfit) => ({
       ...outfit,
-      items: outfit.clothing_items || [],
-      last_worn: getLastWornDate(outfit.wear_history),
+      items: Array.isArray(outfit.clothing_items) ? outfit.clothing_items : [],
+      last_worn: getLastWornDate(outfit.wear_history) || null,
+      wear_count: outfit.wear_history?.length || 0,
     }));
 
     // Exclude recently worn outfits (last 2 days)
@@ -83,8 +81,8 @@ function getLastWornDate(
 }
 
 function filterRecentlyWorn(
-  outfits: OutfitWithDetails[]
-): OutfitWithDetails[] {
+  outfits: OutfitWithStats[]
+): OutfitWithStats[] {
   const today = new Date();
   const twoDaysAgo = new Date(today);
   twoDaysAgo.setDate(today.getDate() - 2);
@@ -100,9 +98,9 @@ function filterRecentlyWorn(
 }
 
 function filterByWeather(
-  outfits: OutfitWithDetails[],
+  outfits: OutfitWithStats[],
   weather: WeatherData
-): OutfitWithDetails[] {
+): OutfitWithStats[] {
   const temp = weather.temperature;
 
   return outfits.filter((outfit) => {

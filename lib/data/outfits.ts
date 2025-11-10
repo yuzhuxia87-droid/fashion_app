@@ -76,12 +76,11 @@ export async function fetchOutfitsWithStats({
 
   // Merge wear stats with outfits and validate
   const outfitsWithStats: OutfitWithStats[] = outfits
-    .map((outfit: { id: string; [key: string]: unknown }) => ({
+    .map((outfit: { id: string; clothing_items?: unknown; [key: string]: unknown }) => ({
       ...outfit,
       wear_count: wearStats[outfit.id]?.count || 0,
       last_worn: wearStats[outfit.id]?.lastWorn || null,
-      items: outfit.clothing_items || [],
-      wear_history: [],
+      items: Array.isArray(outfit.clothing_items) ? outfit.clothing_items : [],
     }))
     .map((outfit) => {
       const validated = OutfitWithStatsSchema.safeParse(outfit);
