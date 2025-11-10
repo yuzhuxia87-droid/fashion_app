@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { ControlledDialog } from '@/components/ui/controlled-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -494,37 +494,33 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
       </main>
 
       {/* Search Dialog */}
-      <Dialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>コーディネートを検索</DialogTitle>
-            <DialogDescription>
-              キーワードやスタイルで検索してください
-            </DialogDescription>
-          </DialogHeader>
+      <ControlledDialog
+        open={searchDialogOpen}
+        onOpenChange={setSearchDialogOpen}
+        title="コーディネートを検索"
+        description="キーワードやスタイルで検索してください"
+      >
+        <div className="space-y-4">
+          <Input
+            placeholder="例: カジュアル、デート、夏コーデ"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && searchImages(searchQuery)}
+            autoFocus
+          />
 
-          <div className="space-y-4">
-            <Input
-              placeholder="例: カジュアル、デート、夏コーデ"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && searchImages(searchQuery)}
-              autoFocus
-            />
-
-            <Button
-              onClick={() => searchImages(searchQuery)}
-              className="w-full"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              検索
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          <Button
+            onClick={() => searchImages(searchQuery)}
+            className="w-full"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            検索
+          </Button>
+        </div>
+      </ControlledDialog>
 
       {/* Analysis Dialog */}
-      <Dialog
+      <ControlledDialog
         open={!!selectedImage}
         onOpenChange={(open) => {
           if (!open) {
@@ -532,124 +528,119 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
             setAnalysisResult(null);
           }
         }}
+        title={analyzing ? 'AI解析中...' : '解析結果'}
+        className="max-w-2xl"
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {analyzing ? 'AI解析中...' : '解析結果'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {selectedImage && (
-                <div className="relative w-full max-w-md mx-auto aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30">
-                <Image
-                  src={selectedImage}
-                  alt="Selected outfit"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                {analyzing && (
-                  <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
-                    <div className="relative">
-                      <Loader2 className="w-12 h-12 text-pink-400 animate-spin" />
-                    </div>
-                    <div className="text-center space-y-1">
-                      <p className="text-gray-900 text-lg font-semibold">
-                        AI解析中...
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        コーディネートを分析しています
-                      </p>
-                    </div>
+        {/* Scrollable content wrapper - scroll happens here, not on DialogContent */}
+        <div className="max-h-[60vh] overflow-y-auto space-y-4">
+          {selectedImage && (
+            <div className="relative w-full max-w-md mx-auto aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100/30">
+              <Image
+                src={selectedImage}
+                alt="Selected outfit"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              {analyzing && (
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
+                  <div className="relative">
+                    <Loader2 className="w-12 h-12 text-pink-400 animate-spin" />
                   </div>
-                )}
-              </div>
-            )}
-
-            {analysisResult && (
-              <div className="space-y-4">
-                {/* Season and Style */}
-                {(analysisResult.season || analysisResult.style) && (
-                  <div className="flex gap-2">
-                    {analysisResult.season && (
-                      <Badge variant="outline">{analysisResult.season}</Badge>
-                    )}
-                    {analysisResult.style && (
-                      <Badge variant="outline">{analysisResult.style}</Badge>
-                    )}
+                  <div className="text-center space-y-1">
+                    <p className="text-gray-900 text-lg font-semibold">
+                      AI解析中...
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      コーディネートを分析しています
+                    </p>
                   </div>
-                )}
+                </div>
+              )}
+            </div>
+          )}
 
-                {/* Detected Items */}
-                <div className="space-y-3">
-                  <p className="text-sm font-semibold text-gray-800">検出されたアイテム</p>
-                  <div className="grid grid-cols-1 gap-3">
-                    {analysisResult.items.map((item, index) => (
+          {analysisResult && (
+            <div className="space-y-4">
+              {/* Season and Style */}
+              {(analysisResult.season || analysisResult.style) && (
+                <div className="flex gap-2">
+                  {analysisResult.season && (
+                    <Badge variant="outline">{analysisResult.season}</Badge>
+                  )}
+                  {analysisResult.style && (
+                    <Badge variant="outline">{analysisResult.style}</Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Detected Items */}
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-800">検出されたアイテム</p>
+                <div className="grid grid-cols-1 gap-3">
+                  {analysisResult.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
+                        item.has_item
+                          ? 'bg-pink-50/50 shadow-md shadow-pink-400/20'
+                          : 'bg-white shadow-sm hover:shadow-md'
+                      }`}
+                      onClick={() => toggleItemOwnership(index)}
+                    >
                       <div
-                        key={index}
-                        className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
+                        className={`flex items-center justify-center w-6 h-6 rounded-lg transition-all duration-200 shrink-0 ${
                           item.has_item
-                            ? 'bg-pink-50/50 shadow-md shadow-pink-400/20'
-                            : 'bg-white shadow-sm hover:shadow-md'
+                            ? 'bg-pink-400'
+                            : 'bg-white border-2 border-gray-300'
                         }`}
-                        onClick={() => toggleItemOwnership(index)}
                       >
-                        <div
-                          className={`flex items-center justify-center w-6 h-6 rounded-lg transition-all duration-200 shrink-0 ${
-                            item.has_item
-                              ? 'bg-pink-400'
-                              : 'bg-white border-2 border-gray-300'
-                          }`}
-                        >
-                          {item.has_item && (
-                            <Check className="w-4 h-4 text-white stroke-[3]" />
+                        {item.has_item && (
+                          <Check className="w-4 h-4 text-white stroke-[3]" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate text-gray-900">
+                          {item.item_type}
+                        </p>
+                        <div className="flex gap-2 mt-1 flex-wrap">
+                          <span className="text-xs text-gray-600">
+                            {item.category}
+                          </span>
+                          {item.color && (
+                            <span className="text-xs text-gray-600">
+                              • {item.color}
+                            </span>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate text-gray-900">
-                            {item.item_type}
-                          </p>
-                          <div className="flex gap-2 mt-1 flex-wrap">
-                            <span className="text-xs text-gray-600">
-                              {item.category}
-                            </span>
-                            {item.color && (
-                              <span className="text-xs text-gray-600">
-                                • {item.color}
-                              </span>
-                            )}
-                          </div>
-                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Save Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button
-                    onClick={() => handleSaveOutfit(false)}
-                    className="flex-1 w-full"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    <span className="truncate">コレクションに保存</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSaveOutfit(true)}
-                    className="flex-1 w-full"
-                  >
-                    <ArchiveIcon className="w-4 h-4 mr-2" />
-                    <span className="truncate">アーカイブに保存</span>
-                  </Button>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+
+              {/* Save Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  onClick={() => handleSaveOutfit(false)}
+                  className="flex-1 w-full"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  <span className="truncate">コレクションに保存</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleSaveOutfit(true)}
+                  className="flex-1 w-full"
+                >
+                  <ArchiveIcon className="w-4 h-4 mr-2" />
+                  <span className="truncate">アーカイブに保存</span>
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </ControlledDialog>
 
       <BottomNav />
     </div>

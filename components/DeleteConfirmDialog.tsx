@@ -1,13 +1,8 @@
 import { Loader2 } from 'lucide-react';
+import { ControlledAlertDialog } from '@/components/ui/controlled-alert-dialog';
 import {
-  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
 interface DeleteConfirmDialogProps {
@@ -28,13 +23,13 @@ export default function DeleteConfirmDialog({
   isDeleting = false,
 }: DeleteConfirmDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
+    <ControlledAlertDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={title}
+      description={description}
+      footer={
+        <>
           <AlertDialogCancel disabled={isDeleting}>キャンセル</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
@@ -50,8 +45,8 @@ export default function DeleteConfirmDialog({
               '削除'
             )}
           </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </>
+      }
+    />
   );
 }

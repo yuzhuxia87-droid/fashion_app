@@ -221,10 +221,52 @@ body {
 }
 
 /* ========================================
-   Radix UI Dialog Fix
-   Radix Dialog adds overflow: hidden to body when opened
-   This forces body to remain scrollable
+   Radix UI Dialog Fix - Multi-Layer Defense
+
+   背景:
+   Radix UI DialogはDialog表示中にbody要素に動的にインラインスタイルを追加します:
+   - overflow: hidden (スクロールを無効化)
+   - padding-right: [width]px (スクロールバー分のレイアウトシフトを防止)
+
+   問題:
+   Dialog閉鎖後、これらのスタイルが残留することがあり、
+   アプリ全体でスクロールができなくなります。
+
+   解決策:
+   以下の多重防御により、どのパターンでもbodyのスクロールを強制的に有効化:
+   1. body要素への基本的な!important指定
+   2. overflow: hiddenを含むstyle属性への対処
+   3. overflow:hiddenを含むstyle属性への対処（スペースなし）
+   4. paddingも含む複合パターンへの対処
+
+   注意:
+   これらはフォールバック対策であり、主な対策は
+   components/ui/controlled-dialog.tsxで実装されています。
    ======================================== */
+
+/* パターン1: overflow: hidden が含まれる場合（スペースあり） */
 body[style*="overflow: hidden"] {
+  overflow: visible !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* パターン2: overflow:hidden が含まれる場合（スペースなし） */
+body[style*="overflow:hidden"] {
+  overflow: visible !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* パターン3: padding-right も含まれる複合パターン */
+body[style*="overflow"][style*="padding-right"] {
+  overflow: visible !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 0 !important;
+}
+
+/* パターン4: style属性が存在する全てのbody要素（最終防御線） */
+body[style] {
   overflow-y: auto !important;
 }
