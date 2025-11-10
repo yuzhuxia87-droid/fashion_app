@@ -37,6 +37,23 @@
   --purple-500: hsl(244 63% 70%); /* #8B7CFF - accent color */
 
   /* ========================================
+     Tab Indicator Gradient (matches screen gradient but darker)
+     Used for active state in collection filters
+     ======================================== */
+  --tab-indicator-from: hsl(244 63% 75%);   /* Deeper purple - #9B8EFF */
+  --tab-indicator-via: hsl(339 75% 68%);    /* Deeper pink - #EA6FA0 */
+  --tab-indicator-to: hsl(244 63% 72%);     /* Deeper purple-pink - #9388FF */
+
+  /* ========================================
+     Tabs Component Sizing (Design System)
+     ======================================== */
+  --tabs-list-height: 3.5rem;           /* 56px - standard height */
+  --tabs-list-height-md: 4rem;          /* 64px - larger screens */
+  --tabs-list-padding: 0.75rem;         /* 12px - internal padding */
+  --tabs-list-radius: 1rem;             /* 16px - outer border radius */
+  --tabs-indicator-radius: 0.75rem;     /* 12px - indicator border radius */
+
+  /* ========================================
      Soft Red palette (for destructive actions)
      ======================================== */
   --red-50: hsl(0 86% 97%);       /* #FEF2F2 - very light red background */
@@ -118,6 +135,13 @@
   --color-purple-500: var(--purple-500);
 
   /* ========================================
+     Tab Indicator Gradient utilities
+     ======================================== */
+  --color-tab-indicator-from: var(--tab-indicator-from);
+  --color-tab-indicator-via: var(--tab-indicator-via);
+  --color-tab-indicator-to: var(--tab-indicator-to);
+
+  /* ========================================
      Soft Red utilities (4-step)
      ======================================== */
   --color-red-50: var(--red-50);
@@ -185,7 +209,7 @@
 html,
 body {
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto !important;  /* !important to override Radix Dialog */
   touch-action: pan-y pinch-zoom;
   overscroll-behavior-y: contain;
 }
@@ -194,4 +218,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ========================================
+   Radix UI Dialog Fix
+   Radix Dialog adds overflow: hidden to body when opened
+   This forces body to remain scrollable
+   ======================================== */
+body[style*="overflow: hidden"] {
+  overflow-y: auto !important;
 }
