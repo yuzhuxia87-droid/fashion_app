@@ -56,7 +56,14 @@ export async function getRecommendedOutfits(
 
     // Match weather conditions
     if (filters.matchWeather && weather) {
-      candidates = filterByWeather(candidates, weather);
+      const weatherFiltered = filterByWeather(candidates, weather);
+
+      // If weather filter removed everything, fall back to all candidates
+      if (weatherFiltered.length === 0 && candidates.length > 0) {
+        // Keep original candidates - weather filter was too strict
+      } else {
+        candidates = weatherFiltered;
+      }
     }
 
     // Shuffle and return top N
@@ -106,17 +113,17 @@ function filterByWeather(
   return outfits.filter((outfit) => {
     const hasOuter = outfit.items.some((item) => item.category === 'outer');
 
-    // Cold weather (< 15°C): prefer outfits with outer layers
-    if (temp < 15) {
+    // Cold weather (< 10°C): strongly prefer outfits with outer layers
+    if (temp < 10) {
       return hasOuter;
     }
 
-    // Hot weather (> 25°C): prefer outfits without heavy outer layers
-    if (temp > 25) {
+    // Hot weather (> 28°C): prefer outfits without heavy outer layers
+    if (temp > 28) {
       return !hasOuter;
     }
 
-    // Mild weather: all outfits are okay
+    // Mild weather (10-28°C): all outfits are okay
     return true;
   });
 }

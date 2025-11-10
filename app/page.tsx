@@ -33,8 +33,8 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <div className="flex justify-center mb-2">
-                  <div className="w-16 h-16 rounded-full bg- flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-" />
+                  <div className="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center">
+                    <Camera className="w-8 h-8 text-pink-600" />
                   </div>
                 </div>
                 <CardTitle className="text-center">簡単保存</CardTitle>
@@ -49,8 +49,8 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <div className="flex justify-center mb-2">
-                  <div className="w-16 h-16 rounded-full bg- flex items-center justify-center">
-                    <Bot className="w-8 h-8 text-" />
+                  <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Bot className="w-8 h-8 text-purple-600" />
                   </div>
                 </div>
                 <CardTitle className="text-center">AI提案</CardTitle>
@@ -65,8 +65,8 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <div className="flex justify-center mb-2">
-                  <div className="w-16 h-16 rounded-full bg- flex items-center justify-center">
-                    <Clock className="w-8 h-8 text-" />
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Clock className="w-8 h-8 text-blue-600" />
                   </div>
                 </div>
                 <CardTitle className="text-center">時短</CardTitle>
