@@ -311,7 +311,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                     key={tag.label}
                     variant={activeTag === tag.label ? 'default' : 'outline'}
                     size="sm"
-                    className="h-8 text-xs md:text-sm"
+                    className="h-8 text-xs md:text-sm rounded-full"
                     onClick={() => {
                       setActiveTag(tag.label);
                       setSearchQuery(tag.query);
@@ -322,10 +322,11 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                   </Button>
                 ))}
 
+                {/* Action button - visually distinct from tags with subtle gray styling */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-8 text-xs md:text-sm gap-1"
+                  className="h-8 text-xs md:text-sm gap-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 font-medium"
                   onClick={() => setShowAllTags(!showAllTags)}
                   aria-expanded={showAllTags}
                   aria-controls="category-tags-expanded"
@@ -333,7 +334,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                 >
                   {showAllTags ? 'たたむ' : 'もっと見る'}
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ease-out ${
+                    className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${
                       showAllTags ? 'rotate-180' : ''
                     }`}
                   />
@@ -356,7 +357,7 @@ export default function BrowseClient({ initialImages }: BrowseClientProps) {
                         key={tag.label}
                         variant={activeTag === tag.label ? 'default' : 'outline'}
                         size="sm"
-                        className={`h-8 text-xs md:text-sm transition-all duration-300 ${
+                        className={`h-8 text-xs md:text-sm rounded-full transition-all duration-300 ${
                           showAllTags
                             ? 'opacity-100 translate-y-0'
                             : 'opacity-0 -translate-y-2'
