@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Search, Star, Clock, Grid3x3 } from 'lucide-react';
+import { Search, Star as StarIcon, Clock, Grid3x3 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import BottomNav from '@/components/BottomNav';
@@ -154,7 +154,7 @@ function CollectionContent({ initialOutfits, initialFilter = 'all' }: Collection
               すべて
             </TabsTrigger>
             <TabsTrigger value="favorites">
-              <Star className="w-4 h-4 mr-1 md:mr-2" />
+              <StarIcon className="w-4 h-4 mr-1 md:mr-2 text-gray-700" strokeWidth={2} />
               お気に入り
             </TabsTrigger>
             <TabsTrigger value="notWornRecently">
