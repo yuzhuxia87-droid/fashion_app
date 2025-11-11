@@ -24,17 +24,27 @@ export async function signupAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Sign up
-  const { error: signUpError } = await supabase.auth.signUp({
+  // Sign up with email redirect configuration
+  const { data, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+    },
   });
 
   if (signUpError) {
     return { error: signUpError.message };
   }
 
-  // Sign in immediately after signup
+  // Check if email confirmation is required
+  if (data.user && !data.user.email_confirmed_at) {
+    // Email confirmation is required - redirect to verify email page
+    redirect('/auth/verify-email');
+  }
+
+  // If email confirmation is not required (e.g., in development with autoconfirm)
+  // Sign in immediately and redirect to home
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,

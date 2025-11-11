@@ -1,19 +1,30 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Mail } from 'lucide-react';
+import { loginAction } from './actions';
 
-export default function LoginPage() {
-  const router = useRouter();
+function LoginForm() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Check for error parameters from URL
+    const errorParam = searchParams.get('error');
+    if (errorParam === 'verification_failed') {
+      setError('メール認証に失敗しました。リンクが無効または期限切れの可能性があります。');
+    } else if (errorParam === 'invalid_link') {
+      setError('無効なリンクです。もう一度お試しください。');
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,44 +33,22 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const email = formData.get('email');
-      const password = formData.get('password');
+      const result = await loginAction(formData);
 
-      // Validate form data
-      if (typeof email !== 'string' || !email) {
-        setError('メールアドレスを入力してください');
-        return;
+      if (result?.error) {
+        // Check if error is related to email confirmation
+        if (result.error.toLowerCase().includes('email') &&
+            result.error.toLowerCase().includes('confirm')) {
+          setError(
+            'メールアドレスの確認が完了していません。受信したメールのリンクをクリックしてください。'
+          );
+        } else {
+          setError(result.error);
+        }
       }
-      if (typeof password !== 'string' || !password) {
-        setError('パスワードを入力してください');
-        return;
-      }
-
-      console.log('[CLIENT] Sending login request for:', email);
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      console.log('[CLIENT] Login response status:', response.status);
-      console.log('[CLIENT] Login response data:', data);
-
-      if (!response.ok) {
-        console.error('[CLIENT] Login failed:', data.error);
-        setError(data.error || 'ログインに失敗しました');
-        return;
-      }
-
-      console.log('[CLIENT] Login successful, redirecting to /home');
-      // Use window.location to ensure cookies are set before navigation
-      window.location.href = '/home';
+      // If successful, loginAction will redirect, so we don't need to do anything here
     } catch (error) {
-      console.error('[CLIENT] Login error:', error);
+      console.error('Login error:', error);
       setError('ログインに失敗しました');
     } finally {
       setLoading(false);
@@ -89,7 +78,20 @@ export default function LoginPage() {
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-sm md:text-base">{error}</AlertDescription>
+                  <AlertDescription className="text-sm md:text-base">
+                    {error}
+                    {error.includes('メールアドレスの確認') && (
+                      <div className="mt-2">
+                        <Link
+                          href="/auth/verify-email"
+                          className="inline-flex items-center text-sm font-medium hover:underline"
+                        >
+                          <Mail className="w-4 h-4 mr-1" />
+                          メール確認ページへ
+                        </Link>
+                      </div>
+                    )}
+                  </AlertDescription>
                 </Alert>
               )}
 
@@ -139,5 +141,13 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
