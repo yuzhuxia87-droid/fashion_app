@@ -64,11 +64,25 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ### 4. データベースのセットアップ
 
-Supabaseのダッシュボードで以下を実行：
+⚠️ **重要: マイグレーションは順番に実行してください**
+
+Supabaseのダッシュボードで以下を順番に実行：
 
 1. SQL Editor を開く
-2. `supabase/migrations/001_initial_schema.sql` の内容をコピー＆ペースト
-3. Run を クリックしてマイグレーションを実行
+2. **マイグレーション 001**: `supabase/migrations/001_initial_schema.sql` を実行
+   - 基本テーブル構造を作成
+3. **マイグレーション 002**: `supabase/migrations/002_auto_create_user_profile.sql` を実行
+   - 🔴 **必須**: ユーザープロファイル自動作成 Trigger
+   - これを実行しないとコレクション保存時にエラーが発生します
+4. **マイグレーション 003**: `supabase/migrations/003_add_schema_documentation.sql` を実行
+   - データベーススキーマのドキュメント化と検証関数
+
+**マイグレーション 002 を実行しないと発生する問題:**
+```
+Error: insert or update on table "outfits" violates foreign key constraint
+```
+
+詳細は [`docs/DATABASE_BEST_PRACTICES.md`](./docs/DATABASE_BEST_PRACTICES.md) を参照してください。
 
 ### 5. 開発サーバーの起動
 

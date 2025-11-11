@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         type: type as any,
         token_hash,
       });
@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
           new URL('/auth/login?error=verification_failed', request.url)
         );
       }
+
+      // Note: User profile in public.users is automatically created by database trigger
+      // See: supabase/migrations/002_auto_create_user_profile.sql
 
       console.log('[AUTH CALLBACK] Verification successful, redirecting to:', next);
       return NextResponse.redirect(new URL(next, request.url));

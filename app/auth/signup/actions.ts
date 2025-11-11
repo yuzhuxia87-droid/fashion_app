@@ -37,6 +37,9 @@ export async function signupAction(formData: FormData) {
     return { error: signUpError.message };
   }
 
+  // Note: User profile in public.users is automatically created by database trigger
+  // See: supabase/migrations/002_auto_create_user_profile.sql
+
   // Check if email confirmation is required
   if (data.user && !data.user.email_confirmed_at) {
     // Email confirmation is required - redirect to verify email page

@@ -39,6 +39,9 @@ export async function loginAction(formData: FormData) {
   console.log('[LOGIN ACTION] Login successful, user ID:', data.user?.id);
   console.log('[LOGIN ACTION] Session exists:', !!data.session);
 
+  // Note: User profile in public.users is automatically created by database trigger
+  // See: supabase/migrations/002_auto_create_user_profile.sql
+
   revalidatePath('/', 'layout');
   redirect('/home');
 }
